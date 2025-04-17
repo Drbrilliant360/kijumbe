@@ -1,4 +1,3 @@
-
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -7,9 +6,10 @@ interface PaymentCardProps {
   amount: number;
   dueDate: string;
   dayNumber: number;
+  onPay?: () => void;
 }
 
-const PaymentCard = ({ title, amount, dueDate, dayNumber }: PaymentCardProps) => {
+const PaymentCard = ({ title, amount, dueDate, dayNumber, onPay }: PaymentCardProps) => {
   // Format currency function
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('sw-TZ', {
@@ -41,7 +41,10 @@ const PaymentCard = ({ title, amount, dueDate, dayNumber }: PaymentCardProps) =>
         </div>
       </div>
       
-      <Button className="w-full bg-primary hover:bg-primary/90 text-white py-5">
+      <Button 
+        className="w-full bg-primary hover:bg-primary/90 text-white py-5"
+        onClick={onPay}
+      >
         Lipa Sasa
       </Button>
     </div>
