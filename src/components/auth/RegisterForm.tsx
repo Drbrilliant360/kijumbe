@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -36,19 +35,6 @@ const RegisterForm = () => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
-        // Create profile
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              user_id: authData.user.id,
-              full_name: fullName,
-              phone: phone,
-            }
-          ]);
-
-        if (profileError) throw profileError;
-
         toast({
           title: "Usajili Umefanikiwa!",
           description: "Tafadhali thibitisha barua pepe yako.",
