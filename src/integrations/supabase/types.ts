@@ -9,7 +9,139 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          amount: number
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          max_members: number
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          max_members: number
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          max_members?: number
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          group_id: string | null
+          id: string
+          status: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          group_id?: string | null
+          id?: string
+          status?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          group_id?: string | null
+          id?: string
+          status?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
