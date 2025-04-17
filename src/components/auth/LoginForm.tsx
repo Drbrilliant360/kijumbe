@@ -3,16 +3,44 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempt with:", { email, password });
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Umefanikiwa Kuingia!",
+        description: "Karibu tena kwenye akaunti yako.",
+      });
+
+      navigate("/home");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Hitilafu!",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,8 +102,9 @@ const LoginForm = () => {
         <Button 
           type="submit" 
           className="w-full py-6 bg-primary hover:bg-primary/90 text-lg"
+          disabled={isLoading}
         >
-          Login
+          {isLoading ? "Inaingia..." : "Login"}
         </Button>
       </form>
 

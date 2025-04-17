@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,11 +20,34 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
   const [amount, setAmount] = useState("");
   const [maxMembers, setMaxMembers] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Get current user's ID
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        setUserId(data.user.id);
+      }
+    };
+    
+    getUser();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        title: "Hitilafu!",
+        description: "Tafadhali ingia kwenye akaunti yako kwanza.",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -35,7 +58,7 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
             description,
             amount: parseInt(amount),
             max_members: parseInt(maxMembers),
-            creator_id: (await supabase.auth.getUser()).data.user?.id,
+            creator_id: userId,
           }
         ])
         .select();
@@ -52,6 +75,7 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
       
       if (onSuccess) onSuccess();
     } catch (error: any) {
+      console.error("Error creating group:", error);
       toast({
         variant: "destructive",
         title: "Hitilafu!",
@@ -132,7 +156,7 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Ghairi
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || !userId}>
               {isLoading ? "Inaunda..." : "Unda Kikundi"}
             </Button>
           </div>

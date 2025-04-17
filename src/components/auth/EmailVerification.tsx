@@ -1,10 +1,33 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const EmailVerification = () => {
   const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
+  const [email, setEmail] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get email from localStorage or query params
+    const storedEmail = localStorage.getItem("verificationEmail");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+
+    // Set up countdown timer for resend button
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   const handleChange = (index: number, value: string) => {
     if (!/^[0-9]*$/.test(value)) return;
@@ -22,20 +45,82 @@ const EmailVerification = () => {
     }
   };
 
-  const handleVerify = () => {
-    // Handle verification logic here
+  const handleVerify = async () => {
     const code = verificationCode.join("");
-    console.log("Verifying with code:", code);
+    if (code.length !== 6) {
+      toast({
+        variant: "destructive",
+        title: "Hitilafu!",
+        description: "Tafadhali weka namba zote 6 za uthibitisho."
+      });
+      return;
+    }
+
+    setIsVerifying(true);
+    
+    try {
+      // Verify the OTP code with Supabase
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: code,
+        type: 'email'
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Imefanikiwa!",
+        description: "Barua pepe yako imethibitishwa kikamilifu.",
+      });
+      
+      // Clear stored email and navigate to login
+      localStorage.removeItem("verificationEmail");
+      navigate("/login");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Hitilafu!",
+        description: error.message || "Kuna tatizo la uthibitisho. Tafadhali jaribu tena."
+      });
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
-  const handleResend = () => {
-    // Handle resend logic here
-    console.log("Resending verification code");
+  const handleResend = async () => {
+    if (!email || isResending) return;
+    
+    setIsResending(true);
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Imetumwa!",
+        description: "Namba mpya za uthibitisho zimetumwa kwenye barua pepe yako.",
+      });
+      
+      // Set cooldown for resend button
+      setCountdown(60);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Hitilafu!",
+        description: error.message || "Imeshindwa kutuma. Tafadhali jaribu tena baadaye."
+      });
+    } finally {
+      setIsResending(false);
+    }
   };
 
   const handleUseNewEmail = () => {
-    // Handle change email logic here
-    console.log("Using a different email");
+    localStorage.removeItem("verificationEmail");
+    navigate("/register");
   };
 
   return (
@@ -62,7 +147,7 @@ const EmailVerification = () => {
         <h1 className="text-3xl font-bold mb-2">Verify Your Email</h1>
         <p className="text-gray-600 text-sm px-6">
           We have sent a verification code to<br />
-          <span className="font-medium">hxcpaxvgxzdodpnces@hthlm.com</span>
+          <span className="font-medium">{email || "your email address"}</span>
         </p>
       </div>
 
@@ -83,8 +168,9 @@ const EmailVerification = () => {
       <Button 
         onClick={handleVerify} 
         className="w-full py-6 bg-primary hover:bg-primary/90 text-white text-lg"
+        disabled={isVerifying}
       >
-        Verify Email
+        {isVerifying ? "Inathibitisha..." : "Verify Email"}
       </Button>
 
       <div className="flex items-center justify-center space-x-1 mt-2">
@@ -92,8 +178,9 @@ const EmailVerification = () => {
         <button 
           onClick={handleResend}
           className="text-primary text-sm font-medium hover:underline"
+          disabled={countdown > 0 || isResending}
         >
-          Resend
+          {countdown > 0 ? `Resend in ${countdown}s` : "Resend"}
         </button>
       </div>
 
