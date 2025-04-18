@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,10 +36,13 @@ const GroupMembers = ({ group, onMemberAdded }: GroupMembersProps) => {
         .insert({
           group_id: group.id,
           phone_number: phoneNumber,
-          user_id: userData.user.id // Add the required user_id
+          user_id: userData.user.id // This is required
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error adding member:", error);
+        throw error;
+      }
 
       toast({
         title: "Imefanikiwa!",
