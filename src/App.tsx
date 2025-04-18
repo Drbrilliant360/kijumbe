@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,35 +18,38 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import GroupDashboard from "./pages/GroupDashboard";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verification" element={<Verification />} />
-          
-          {/* Protected Routes (would add auth check in a real app) */}
-          <Route path="/home" element={<Home />} />
-          <Route path="/malipo" element={<Malipo />} />
-          <Route path="/vikundi" element={<Vikundi />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/vikundi/:id" element={<GroupDashboard />} />
-          
-          {/* Catch-all route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  // Create a new QueryClient instance inside the component
+  const queryClient = new QueryClient();
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verification" element={<Verification />} />
+            
+            {/* Protected Routes (would add auth check in a real app) */}
+            <Route path="/home" element={<Home />} />
+            <Route path="/malipo" element={<Malipo />} />
+            <Route path="/vikundi" element={<Vikundi />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/vikundi/:id" element={<GroupDashboard />} />
+            
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

@@ -119,6 +119,7 @@ const Vikundi = () => {
           {groups.map((group) => (
             <GroupCard
               key={group.id}
+              id={group.id} // Add the required id prop
               title={group.name}
               description={group.description || ""}
               amount={group.amount}
