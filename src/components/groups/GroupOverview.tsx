@@ -7,11 +7,15 @@ interface GroupOverviewProps {
 }
 
 const GroupOverview = ({ group }: GroupOverviewProps) => {
-  const totalMembers = group.group_members?.length || 0;
-  const totalCollected = group.transactions
-    ?.filter((t: any) => t.type === 'deposit')
+  // Ensure we have array data even if null
+  const members = group.group_members || [];
+  const transactions = group.transactions || [];
+  
+  const totalMembers = members.length || 0;
+  const totalCollected = transactions
+    .filter((t: any) => t.type === 'deposit')
     .reduce((sum: number, t: any) => sum + t.amount, 0) || 0;
-  const totalDebt = group.amount * group.max_members - totalCollected;
+  const totalDebt = (group.amount * group.max_members) - totalCollected;
 
   return (
     <div className="grid gap-4 md:grid-cols-3 p-4">

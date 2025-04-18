@@ -13,20 +13,19 @@ const GroupDashboard = () => {
   const { id } = useParams();
   const [group, setGroup] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchGroupDetails = async () => {
+    setIsLoading(true);
+    setError(null);
+    
     try {
+      // First try a simpler query that doesn't use the problematic relation
       const { data, error } = await supabase
         .from('groups')
         .select(`
           *,
-          group_members (
-            id,
-            user_id,
-            phone_number,
-            joined_at
-          ),
           transactions (
             id,
             amount,
@@ -39,8 +38,28 @@ const GroupDashboard = () => {
         .single();
 
       if (error) throw error;
-      setGroup(data);
+      
+      // Then fetch members separately
+      const { data: membersData, error: membersError } = await supabase
+        .from('group_members')
+        .select(`
+          id,
+          user_id,
+          phone_number,
+          joined_at
+        `)
+        .eq('group_id', id);
+        
+      if (membersError) throw membersError;
+      
+      // Combine the data
+      setGroup({
+        ...data,
+        group_members: membersData || []
+      });
     } catch (error: any) {
+      console.error("Error fetching group details:", error);
+      setError(error.message);
       toast({
         variant: "destructive",
         title: "Hitilafu!",
@@ -52,7 +71,9 @@ const GroupDashboard = () => {
   };
 
   useEffect(() => {
-    fetchGroupDetails();
+    if (id) {
+      fetchGroupDetails();
+    }
   }, [id]);
 
   const Header = (
@@ -73,6 +94,33 @@ const GroupDashboard = () => {
     );
   }
 
+  if (error) {
+    return (
+      <AppLayout header={Header}>
+        <div className="flex justify-center items-center h-full flex-col p-4">
+          <h2 className="text-xl font-semibold text-red-500 mb-2">Hitilafu imetokea</h2>
+          <p className="text-gray-600 text-center">{error}</p>
+          <button 
+            onClick={fetchGroupDetails}
+            className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+          >
+            Jaribu tena
+          </button>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!group) {
+    return (
+      <AppLayout header={Header}>
+        <div className="flex justify-center items-center h-full">
+          <p className="text-gray-500">Kikundi hakipatikani.</p>
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout header={Header}>
       <Tabs defaultValue="overview" className="w-full">
@@ -88,7 +136,7 @@ const GroupDashboard = () => {
           <GroupMembers group={group} onMemberAdded={fetchGroupDetails} />
         </TabsContent>
         <TabsContent value="transactions">
-          <GroupTransactions transactions={group.transactions} />
+          <GroupTransactions transactions={group.transactions || []} />
         </TabsContent>
       </Tabs>
     </AppLayout>
