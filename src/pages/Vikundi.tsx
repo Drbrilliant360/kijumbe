@@ -21,9 +21,10 @@ const Vikundi = () => {
   const fetchGroups = async () => {
     setIsLoading(true);
     try {
+      // Step 1: Get the groups with simple query
       let query = supabase
         .from('groups')
-        .select('*, group_members(*)');
+        .select('*');
       
       if (activeTab !== 'all') {
         query = query.eq('status', activeTab);
@@ -33,10 +34,30 @@ const Vikundi = () => {
         query = query.ilike('name', `%${searchQuery}%`);
       }
       
-      const { data, error } = await query;
+      const { data: groupsData, error: groupsError } = await query;
       
-      if (error) throw error;
-      setGroups(data || []);
+      if (groupsError) throw groupsError;
+      
+      // Step 2: Get member counts for each group separately
+      if (groupsData && groupsData.length > 0) {
+        const groupsWithMemberCounts = await Promise.all(
+          groupsData.map(async (group) => {
+            const { count, error: countError } = await supabase
+              .from('group_members')
+              .select('id', { count: 'exact', head: true })
+              .eq('group_id', group.id);
+            
+            return {
+              ...group,
+              memberCount: countError ? 0 : (count || 0)
+            };
+          })
+        );
+        
+        setGroups(groupsWithMemberCounts);
+      } else {
+        setGroups([]);
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -119,12 +140,12 @@ const Vikundi = () => {
           {groups.map((group) => (
             <GroupCard
               key={group.id}
-              id={group.id} // Add the required id prop
+              id={group.id}
               title={group.name}
               description={group.description || ""}
               amount={group.amount}
-              members={`${group.group_members?.length || 0}/${group.max_members}`}
-              progress={Math.min(100, ((group.group_members?.length || 0) / group.max_members) * 100)}
+              members={`${group.memberCount || 0}/${group.max_members}`}
+              progress={Math.min(100, ((group.memberCount || 0) / group.max_members) * 100)}
             />
           ))}
         </div>

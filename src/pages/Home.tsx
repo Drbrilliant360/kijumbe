@@ -45,18 +45,36 @@ const Home = () => {
 
   const fetchGroups = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
+      // Simplify the query to avoid the recursion issue
       const { data, error } = await supabase
         .from('groups')
-        .select('*')
+        .select('*') // Only select the group data, not the related members
         .eq('status', 'active')
         .limit(3);
 
       if (error) throw error;
-      setGroups(data || []);
+      
+      // Fetch group member counts separately
+      if (data && data.length > 0) {
+        const groupsWithMemberCounts = await Promise.all(
+          data.map(async (group) => {
+            const { count, error: countError } = await supabase
+              .from('group_members')
+              .select('id', { count: 'exact', head: true })
+              .eq('group_id', group.id);
+            
+            return {
+              ...group,
+              memberCount: countError ? 0 : (count || 0)
+            };
+          })
+        );
+        setGroups(groupsWithMemberCounts);
+      } else {
+        setGroups([]);
+      }
     } catch (error: any) {
+      console.error('Error fetching groups:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -72,9 +90,10 @@ const Home = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Simplify the query to avoid potential recursion issues
       const { data, error } = await supabase
         .from('transactions')
-        .select('*')
+        .select('id, amount, type, description, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(3);
@@ -155,21 +174,27 @@ const Home = () => {
           </button>
         </div>
 
-        {transactions.map(transaction => (
-          <TransactionItem 
-            key={transaction.id}
-            type={transaction.type}
-            title={transaction.description || "Transaction"}
-            description={transaction.group_id ? "Group Payment" : "Individual Payment"}
-            amount={transaction.amount}
-            date={new Date(transaction.created_at).toLocaleDateString('en-US', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric'
-            })}
-            isPositive={transaction.type === 'deposit'}
-          />
-        ))}
+        {transactions.length > 0 ? (
+          transactions.map(transaction => (
+            <TransactionItem 
+              key={transaction.id}
+              type={transaction.type}
+              title={transaction.description || "Transaction"}
+              description={transaction.group_id ? "Group Payment" : "Individual Payment"}
+              amount={transaction.amount}
+              date={new Date(transaction.created_at).toLocaleDateString('en-US', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+              })}
+              isPositive={transaction.type === 'deposit'}
+            />
+          ))
+        ) : (
+          <div className="text-center py-4 text-gray-500">
+            No transactions found.
+          </div>
+        )}
       </div>
     </AppLayout>
   );
