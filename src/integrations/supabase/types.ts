@@ -14,18 +14,21 @@ export type Database = {
           group_id: string
           id: string
           joined_at: string
+          phone_number: string | null
           user_id: string
         }
         Insert: {
           group_id: string
           id?: string
           joined_at?: string
+          phone_number?: string | null
           user_id: string
         }
         Update: {
           group_id?: string
           id?: string
           joined_at?: string
+          phone_number?: string | null
           user_id?: string
         }
         Relationships: [

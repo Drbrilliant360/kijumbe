@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import Malipo from "./pages/Malipo";
 import Vikundi from "./pages/Vikundi";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import GroupDashboard from "./pages/GroupDashboard";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +38,7 @@ const App = () => (
           <Route path="/malipo" element={<Malipo />} />
           <Route path="/vikundi" element={<Vikundi />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/vikundi/:id" element={<GroupDashboard />} />
           
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
