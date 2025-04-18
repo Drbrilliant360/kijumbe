@@ -12,6 +12,8 @@ import GroupTransactions from "@/components/groups/GroupTransactions";
 const GroupDashboard = () => {
   const { id } = useParams();
   const [group, setGroup] = useState<any>(null);
+  const [groupMembers, setGroupMembers] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -21,42 +23,35 @@ const GroupDashboard = () => {
     setError(null);
     
     try {
-      // First try a simpler query that doesn't use the problematic relation
-      const { data, error } = await supabase
+      // Fetch the group details first
+      const { data: groupData, error: groupError } = await supabase
         .from('groups')
-        .select(`
-          *,
-          transactions (
-            id,
-            amount,
-            type,
-            description,
-            created_at
-          )
-        `)
+        .select('*')
         .eq('id', id)
         .single();
 
-      if (error) throw error;
+      if (groupError) throw groupError;
       
-      // Then fetch members separately
+      // Fetch members separately
       const { data: membersData, error: membersError } = await supabase
         .from('group_members')
-        .select(`
-          id,
-          user_id,
-          phone_number,
-          joined_at
-        `)
+        .select('*')
         .eq('group_id', id);
         
       if (membersError) throw membersError;
       
+      // Fetch transactions separately
+      const { data: transactionsData, error: transactionsError } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('group_id', id);
+        
+      if (transactionsError) throw transactionsError;
+      
       // Combine the data
-      setGroup({
-        ...data,
-        group_members: membersData || []
-      });
+      setGroup(groupData);
+      setGroupMembers(membersData || []);
+      setTransactions(transactionsData || []);
     } catch (error: any) {
       console.error("Error fetching group details:", error);
       setError(error.message);
@@ -121,6 +116,13 @@ const GroupDashboard = () => {
     );
   }
 
+  // Create a combined group object with members and transactions
+  const groupWithRelations = {
+    ...group,
+    group_members: groupMembers,
+    transactions: transactions
+  };
+
   return (
     <AppLayout header={Header}>
       <Tabs defaultValue="overview" className="w-full">
@@ -130,13 +132,13 @@ const GroupDashboard = () => {
           <TabsTrigger value="transactions">Malipo</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <GroupOverview group={group} />
+          <GroupOverview group={groupWithRelations} />
         </TabsContent>
         <TabsContent value="members">
-          <GroupMembers group={group} onMemberAdded={fetchGroupDetails} />
+          <GroupMembers group={groupWithRelations} onMemberAdded={fetchGroupDetails} />
         </TabsContent>
         <TabsContent value="transactions">
-          <GroupTransactions transactions={group.transactions || []} />
+          <GroupTransactions transactions={transactions} />
         </TabsContent>
       </Tabs>
     </AppLayout>
