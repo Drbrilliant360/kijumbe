@@ -30,14 +30,48 @@ const Home = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // First, try to get the user's profile
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('full_name, username')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to handle no results case
 
-      if (error) throw error;
-      setUserName(profile?.full_name || profile?.username || 'User');
+      if (error && error.code !== 'PGRST116') {
+        // If there's an error other than "no rows", throw it
+        throw error;
+      }
+
+      if (profile) {
+        // If profile exists, use it
+        setUserName(profile?.full_name || profile?.username || 'User');
+      } else {
+        // If no profile exists, create one using user metadata
+        const fullName = user.user_metadata?.full_name;
+        const email = user.email;
+        
+        if (fullName) {
+          // Use the user's metadata to extract a name
+          setUserName(fullName);
+          
+          // Create a profile for this user
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: user.id,
+              full_name: fullName,
+              username: email?.split('@')[0] || 'user',
+              email_verified: user.email_confirmed_at ? true : false
+            });
+            
+          if (insertError) {
+            console.error('Error creating profile:', insertError);
+          }
+        } else {
+          // Fallback to email or default
+          setUserName(email?.split('@')[0] || 'User');
+        }
+      }
     } catch (error: any) {
       console.error('Error fetching user data:', error);
       toast({
