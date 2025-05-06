@@ -1,5 +1,5 @@
 
-import { Bell } from "lucide-react";
+import { Bell, Circle } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import BalanceSummary from "@/components/home/BalanceSummary";
@@ -40,6 +40,11 @@ const Home = () => {
       setUserName(profile?.full_name || profile?.username || 'User');
     } catch (error: any) {
       console.error('Error fetching user data:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load user profile"
+      });
     }
   };
 
@@ -102,6 +107,11 @@ const Home = () => {
       setTransactions(data || []);
     } catch (error: any) {
       console.error('Error fetching transactions:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load transactions"
+      });
     }
   };
 
@@ -113,7 +123,7 @@ const Home = () => {
             <span className="text-primary font-bold">{userName.charAt(0)}</span>
           </div>
           <div>
-            <h2 className="font-bold text-lg">{t('greeting')}, {userName}</h2>
+            <h2 className="font-bold text-lg">Habari {userName}</h2>
             <p className="text-gray-500 text-sm">Karibu Kijumbe App</p>
           </div>
         </div>
@@ -125,16 +135,20 @@ const Home = () => {
     </div>
   );
 
+  if (loading) {
+    return (
+      <AppLayout header={Header}>
+        <div className="flex items-center justify-center h-48">
+          <Circle className="animate-spin h-10 w-10 text-green-500" />
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout header={Header}>
       {/* Balance Summary */}
-      <BalanceSummary 
-        totalBalance={-1825000}
-        contributions={1325000}
-        payments={3150000}
-        debt={20000}
-        hasActive={groups.length > 0}
-      />
+      <BalanceSummary />
 
       {/* Quick Actions */}
       <QuickActions />
