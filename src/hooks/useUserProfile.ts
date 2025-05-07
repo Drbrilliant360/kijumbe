@@ -40,8 +40,8 @@ export const useUserProfile = () => {
 
       if (profile) {
         // If profile exists, use it
-        setUserName(profile?.full_name || profile?.username || 'User');
-        setIsAdmin(profile?.role === 'admin'); // Check if user is admin
+        setUserName(profile.full_name || profile.username || 'User');
+        setIsAdmin(profile.role === 'admin'); // Check if user is admin
       } else {
         // If no profile exists, create one using user metadata
         const fullName = user.user_metadata?.full_name;
