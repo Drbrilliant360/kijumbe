@@ -14,12 +14,12 @@ const Logo: React.FC<LogoProps> = ({ size = "md", className = "" }) => {
   };
 
   return (
-    <div className={`bg-secondary rounded-full ${className}`}>
-      <div className={`${sizeMap[size]} p-2 flex items-center justify-center`}>
-        <div className="bg-primary rounded-md w-full h-full flex items-center justify-center">
-          <div className="w-1/2 h-1/2 bg-white rounded-sm"></div>
-        </div>
-      </div>
+    <div className={`${sizeMap[size]} ${className}`}>
+      <img 
+        src="/lovable-uploads/a7730e30-4841-4e84-b261-c7a02ce07b27.png" 
+        alt="Kijumbe Logo" 
+        className="w-full h-full object-contain"
+      />
     </div>
   );
 };

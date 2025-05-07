@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,7 @@ import { Mail, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import Logo from "@/components/ui/logo";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -67,11 +67,7 @@ const LoginForm = () => {
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto space-y-6 p-4">
-      <div className="bg-secondary rounded-full p-8 mb-4">
-        <div className="w-16 h-16 bg-primary rounded-md flex items-center justify-center">
-          <div className="w-8 h-8 bg-white rounded-sm m-1"></div>
-        </div>
-      </div>
+      <Logo size="lg" className="mb-4" />
 
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">Karibu kwa Kijumbe</h1>
