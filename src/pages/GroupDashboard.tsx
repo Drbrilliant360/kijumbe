@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GroupOverview from "@/components/groups/GroupOverview";
 import GroupMembers from "@/components/groups/GroupMembers";
 import GroupTransactions from "@/components/groups/GroupTransactions";
+import { Share } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const GroupDashboard = () => {
   const { id } = useParams();
@@ -16,6 +18,7 @@ const GroupDashboard = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
   const { toast } = useToast();
 
   const fetchGroupDetails = async () => {
@@ -71,10 +74,58 @@ const GroupDashboard = () => {
     }
   }, [id]);
 
+  const handleShare = async () => {
+    if (!group) return;
+    
+    setIsSharing(true);
+    try {
+      // Create the share URL for the group
+      const shareUrl = `${window.location.origin}/vikundi/${id}`;
+      
+      // Try to use the Web Share API if available
+      if (navigator.share) {
+        await navigator.share({
+          title: `Join ${group.name} on Kijumbe App`,
+          text: `Check out this group: ${group.name}`,
+          url: shareUrl,
+        });
+      } else {
+        // Fallback to clipboard if Web Share API is not available
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Imefanikiwa!",
+          description: "Link imeundwa nakala. Unaweza kuishirikisha sasa.",
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing group:", error);
+      toast({
+        variant: "destructive",
+        title: "Hitilafu!",
+        description: "Imeshindwa kuunda link kwa ajili ya kushirikisha.",
+      });
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const Header = (
     <div className="p-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{group?.name || "Loading..."}</h1>
+        <Button 
+          size="sm" 
+          variant="outline"
+          className="p-1 h-8 w-8 rounded-full"
+          onClick={handleShare}
+          disabled={isSharing || !group}
+        >
+          {isSharing ? (
+            <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+          ) : (
+            <Share className="h-4 w-4" />
+          )}
+        </Button>
       </div>
     </div>
   );
