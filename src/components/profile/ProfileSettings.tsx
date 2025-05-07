@@ -1,15 +1,26 @@
 
 import { ChevronRight, User, Bell, Lock, HelpCircle, Info } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const ProfileSettings = () => {
+  const { userName, loading, userEmail, isAdmin } = useUserProfile();
+
   return (
     <div className="space-y-4">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-center mb-2">Wasifu</h1>
-        <div className="text-center">
-          <p className="text-gray-600">test@example.com</p>
-          <div className="flex items-center justify-center gap-1 text-primary">
+        <div className="flex flex-col items-center space-y-2">
+          <Avatar className="h-20 w-20">
+            <AvatarImage src={`https://api.dicebear.com/7.x/micah/svg?seed=${userName || 'user'}`} alt={userName} />
+            <AvatarFallback>{userName?.substring(0, 2) || 'U'}</AvatarFallback>
+          </Avatar>
+          
+          <div className="text-xl font-medium">{loading ? "Loading..." : userName}</div>
+          <p className="text-gray-600">{userEmail || "Loading email..."}</p>
+          
+          <div className="flex items-center justify-center gap-1 text-primary mt-1">
             <svg
               width="16"
               height="16"
@@ -23,7 +34,7 @@ const ProfileSettings = () => {
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
-            <span className="text-sm">Verified</span>
+            <span className="text-sm">{isAdmin ? "Kijumbe (Admin)" : "Mtumiaji (User)"}</span>
           </div>
         </div>
       </div>

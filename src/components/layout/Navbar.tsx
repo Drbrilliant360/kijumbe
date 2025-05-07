@@ -16,7 +16,7 @@ const Navbar = () => {
         <NavItem 
           to="/" 
           icon={<Home className={`w-6 h-6 ${isActive('/') ? 'text-primary' : 'text-gray-500'}`} />} 
-          label="Home" 
+          label="Mwanzo" 
           isActive={isActive('/')} 
         />
         <NavItem 
@@ -34,7 +34,7 @@ const Navbar = () => {
         <NavItem 
           to="/profile" 
           icon={<User className={`w-6 h-6 ${isActive('/profile') ? 'text-primary' : 'text-gray-500'}`} />} 
-          label="Profile" 
+          label="Wasifu" 
           isActive={isActive('/profile')} 
         />
       </div>

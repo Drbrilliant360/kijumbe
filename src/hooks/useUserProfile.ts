@@ -6,8 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 export const useUserProfile = () => {
   const { toast } = useToast();
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false); // Default to regular user
 
   useEffect(() => {
     fetchUserData();
@@ -22,11 +24,12 @@ export const useUserProfile = () => {
       }
       
       setUserId(user.id);
+      setUserEmail(user.email || "");
 
       // First, try to get the user's profile
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('full_name, username')
+        .select('full_name, username, role')
         .eq('user_id', user.id)
         .maybeSingle(); // Use maybeSingle instead of single to handle no results case
 
@@ -38,6 +41,7 @@ export const useUserProfile = () => {
       if (profile) {
         // If profile exists, use it
         setUserName(profile?.full_name || profile?.username || 'User');
+        setIsAdmin(profile?.role === 'admin'); // Check if user is admin
       } else {
         // If no profile exists, create one using user metadata
         const fullName = user.user_metadata?.full_name;
@@ -54,7 +58,8 @@ export const useUserProfile = () => {
               user_id: user.id,
               full_name: fullName,
               username: email?.split('@')[0] || 'user',
-              email_verified: user.email_confirmed_at ? true : false
+              email_verified: user.email_confirmed_at ? true : false,
+              role: 'user' // Default role is user
             });
             
           if (insertError) {
@@ -77,5 +82,5 @@ export const useUserProfile = () => {
     }
   };
 
-  return { userName, loading, userId };
+  return { userName, userEmail, loading, userId, isAdmin };
 };
