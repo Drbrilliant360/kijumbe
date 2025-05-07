@@ -1,6 +1,6 @@
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Users, Wallet, User } from "lucide-react";
+import { Home, Users, Wallet, User, Settings } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,7 +12,7 @@ const Navbar = () => {
   };
 
   const handleNavigation = (route: string) => {
-    if (route === '/' && (path === '/login' || path === '/')) {
+    if (route === '/home' && (path === '/login' || path === '/')) {
       navigate('/home');
     } else {
       navigate(route);
@@ -23,10 +23,10 @@ const Navbar = () => {
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
       <div className="flex justify-around items-center p-2">
         <NavItem 
-          onClick={() => handleNavigation('/')}
-          icon={<Home className={`w-6 h-6 ${isActive('/') ? 'text-primary' : 'text-gray-500'}`} />} 
+          onClick={() => handleNavigation('/home')}
+          icon={<Home className={`w-6 h-6 ${isActive('/home') ? 'text-primary' : 'text-gray-500'}`} />} 
           label="Mwanzo" 
-          isActive={isActive('/')} 
+          isActive={isActive('/home')} 
         />
         <NavItem 
           onClick={() => handleNavigation('/vikundi')}
@@ -45,6 +45,12 @@ const Navbar = () => {
           icon={<User className={`w-6 h-6 ${isActive('/profile') ? 'text-primary' : 'text-gray-500'}`} />} 
           label="Wasifu" 
           isActive={isActive('/profile')} 
+        />
+        <NavItem 
+          onClick={() => handleNavigation('/mpangilio')}
+          icon={<Settings className={`w-6 h-6 ${isActive('/mpangilio') ? 'text-primary' : 'text-gray-500'}`} />} 
+          label="Mpangilio" 
+          isActive={isActive('/mpangilio')} 
         />
       </div>
     </div>

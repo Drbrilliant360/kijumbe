@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 import Malipo from "./pages/Malipo";
 import Vikundi from "./pages/Vikundi";
 import Profile from "./pages/Profile";
+import Mpangilio from "./pages/Mpangilio";
 import NotFound from "./pages/NotFound";
 import GroupDashboard from "./pages/GroupDashboard";
 
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="/malipo" element={<Malipo />} />
             <Route path="/vikundi" element={<Vikundi />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/mpangilio" element={<Mpangilio />} />
             <Route path="/vikundi/:id" element={<GroupDashboard />} />
             
             {/* Catch-all route */}

@@ -69,6 +69,9 @@ export const translations = {
   about: "Kuhusu",
   aboutDesc: "Soma kuhusu programu hii",
   
+  // Settings (Mpangilio)
+  mpangilioTitle: "Mpangilio",
+  
   // Transactions
   transactionHistory: "Taarifa",
   viewAll: "Angalia Vyote",
