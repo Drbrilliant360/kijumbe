@@ -8,7 +8,22 @@ const Navbar = () => {
   const path = location.pathname;
 
   const isActive = (route: string) => {
-    return path === route;
+    if (route === '/home') {
+      return path === '/home';
+    }
+    if (route === '/vikundi') {
+      return path.startsWith('/vikundi');
+    }
+    if (route === '/malipo') {
+      return path.startsWith('/malipo');
+    }
+    if (route === '/profile') {
+      return path.startsWith('/profile');
+    }
+    if (route === '/mpangilio') {
+      return path.startsWith('/mpangilio');
+    }
+    return false;
   };
 
   const handleNavigation = (route: string) => {

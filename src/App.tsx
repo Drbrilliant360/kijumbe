@@ -19,6 +19,17 @@ import Mpangilio from "./pages/Mpangilio";
 import NotFound from "./pages/NotFound";
 import GroupDashboard from "./pages/GroupDashboard";
 
+// Mpangilio Sub-pages
+import PasswordChange from "./pages/mpangilio/PasswordChange";
+import TwoFactorAuth from "./pages/mpangilio/TwoFactorAuth";
+import BiometricLogin from "./pages/mpangilio/BiometricLogin";
+import LogoutAllDevices from "./pages/mpangilio/LogoutAllDevices";
+import ManageDevices from "./pages/mpangilio/ManageDevices";
+import EditProfile from "./pages/mpangilio/EditProfile";
+import BankAccounts from "./pages/mpangilio/BankAccounts";
+import LanguageSettings from "./pages/mpangilio/LanguageSettings";
+import ClearCache from "./pages/mpangilio/ClearCache";
+
 const App = () => {
   // Create a new QueryClient instance inside the component
   const queryClient = new QueryClient();
@@ -44,6 +55,17 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/mpangilio" element={<Mpangilio />} />
             <Route path="/vikundi/:id" element={<GroupDashboard />} />
+            
+            {/* Mpangilio Sub-routes */}
+            <Route path="/mpangilio/password" element={<PasswordChange />} />
+            <Route path="/mpangilio/two-factor" element={<TwoFactorAuth />} />
+            <Route path="/mpangilio/biometric" element={<BiometricLogin />} />
+            <Route path="/mpangilio/logout-all" element={<LogoutAllDevices />} />
+            <Route path="/mpangilio/devices" element={<ManageDevices />} />
+            <Route path="/mpangilio/edit-profile" element={<EditProfile />} />
+            <Route path="/mpangilio/bank-accounts" element={<BankAccounts />} />
+            <Route path="/mpangilio/language" element={<LanguageSettings />} />
+            <Route path="/mpangilio/clear-cache" element={<ClearCache />} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
