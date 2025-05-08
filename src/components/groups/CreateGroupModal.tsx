@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "@/hooks/use-translations";
 
 interface CreateGroupModalProps {
   onSuccess?: () => void;
@@ -22,6 +23,7 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslations();
 
   useEffect(() => {
     // Get current user's ID
@@ -42,14 +44,15 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
     if (!userId) {
       toast({
         variant: "destructive",
-        title: "Hitilafu!",
-        description: "Tafadhali ingia kwenye akaunti yako kwanza.",
+        title: t('error'),
+        description: t('login_required'),
       });
       setIsLoading(false);
       return;
     }
 
     try {
+      // Create the group
       const { data, error } = await supabase
         .from('groups')
         .insert([
@@ -64,10 +67,27 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
         .select();
 
       if (error) throw error;
+      
+      if (data && data.length > 0) {
+        // Automatically add the creator as a member of the group
+        const groupId = data[0].id;
+        
+        const { error: memberError } = await supabase
+          .from('group_members')
+          .insert({
+            group_id: groupId,
+            user_id: userId,
+            phone_number: 'Admin' // Placeholder for creator's phone
+          });
+          
+        if (memberError) {
+          console.error("Error adding creator as member:", memberError);
+        }
+      }
 
       toast({
-        title: "Kikundi Kimeundwa!",
-        description: "Kikundi chako kipya kimeundwa kikamilifu.",
+        title: t('group_created'),
+        description: t('group_created_success'),
       });
 
       setOpen(false);
@@ -78,7 +98,7 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
       console.error("Error creating group:", error);
       toast({
         variant: "destructive",
-        title: "Hitilafu!",
+        title: t('error'),
         description: error.message,
       });
     } finally {
@@ -98,66 +118,66 @@ const CreateGroupModal = ({ onSuccess }: CreateGroupModalProps) => {
       <DialogTrigger asChild>
         <Button className="w-full py-6 bg-primary hover:bg-primary/90 flex items-center justify-center gap-2">
           <Plus className="w-5 h-5" />
-          <span className="font-bold">Unda Kikundi Kipya</span>
+          <span className="font-bold">{t('create_new_group')}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl">Unda Kikundi Kipya</DialogTitle>
+          <DialogTitle className="text-xl">{t('create_new_group')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Jina la Kikundi</Label>
+            <Label htmlFor="name">{t('group_name')}</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Weka jina la kikundi"
+              placeholder={t('enter_group_name')}
               required
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description">Maelezo ya Kikundi</Label>
+            <Label htmlFor="description">{t('group_description')}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Weka maelezo ya kikundi"
+              placeholder={t('enter_group_description')}
               rows={3}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="amount">Kiasi cha Kuchangia (TZS)</Label>
+            <Label htmlFor="amount">{t('contribution_amount')} (TZS)</Label>
             <Input
               id="amount"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Kiasi katika shilingi"
+              placeholder={t('amount_placeholder')}
               required
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="maxMembers">Idadi ya Wanachama</Label>
+            <Label htmlFor="maxMembers">{t('member_count')}</Label>
             <Input
               id="maxMembers"
               type="number"
               value={maxMembers}
               onChange={(e) => setMaxMembers(e.target.value)}
-              placeholder="Idadi ya watu watakaoshiriki"
+              placeholder={t('member_count_placeholder')}
               required
             />
           </div>
           
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Ghairi
+              {t('cancel')}
             </Button>
             <Button type="submit" disabled={isLoading || !userId}>
-              {isLoading ? "Inaunda..." : "Unda Kikundi"}
+              {isLoading ? t('creating') : t('create_group')}
             </Button>
           </div>
         </form>

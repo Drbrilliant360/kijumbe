@@ -10,6 +10,8 @@ import GroupMembers from "@/components/groups/GroupMembers";
 import GroupTransactions from "@/components/groups/GroupTransactions";
 import { Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/use-translations";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const GroupDashboard = () => {
   const { id } = useParams();
@@ -19,11 +21,20 @@ const GroupDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [isGroupAdmin, setIsGroupAdmin] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslations();
+  const { userId } = useUserProfile();
 
   const fetchGroupDetails = async () => {
     setIsLoading(true);
     setError(null);
+    
+    if (!userId) {
+      setError("User not authenticated");
+      setIsLoading(false);
+      return;
+    }
     
     try {
       // Fetch the group details first
@@ -34,6 +45,23 @@ const GroupDashboard = () => {
         .single();
 
       if (groupError) throw groupError;
+      
+      // Check if user is a member of this group
+      const { data: membershipData, error: membershipError } = await supabase
+        .from('group_members')
+        .select('*')
+        .eq('group_id', id)
+        .eq('user_id', userId);
+        
+      if (membershipError) throw membershipError;
+      
+      // If user is not a member and not the creator, block access
+      if (groupData.creator_id !== userId && (!membershipData || membershipData.length === 0)) {
+        throw new Error("You don't have permission to view this group");
+      }
+      
+      // Check if user is the group admin (creator)
+      setIsGroupAdmin(groupData.creator_id === userId);
       
       // Fetch members separately
       const { data: membersData, error: membersError } = await supabase
@@ -60,7 +88,7 @@ const GroupDashboard = () => {
       setError(error.message);
       toast({
         variant: "destructive",
-        title: "Hitilafu!",
+        title: t('error'),
         description: error.message,
       });
     } finally {
@@ -69,10 +97,10 @@ const GroupDashboard = () => {
   };
 
   useEffect(() => {
-    if (id) {
+    if (id && userId) {
       fetchGroupDetails();
     }
-  }, [id]);
+  }, [id, userId]);
 
   const handleShare = async () => {
     if (!group) return;
@@ -93,16 +121,16 @@ const GroupDashboard = () => {
         // Fallback to clipboard if Web Share API is not available
         await navigator.clipboard.writeText(shareUrl);
         toast({
-          title: "Imefanikiwa!",
-          description: "Link imeundwa nakala. Unaweza kuishirikisha sasa.",
+          title: t('success'),
+          description: t('link_copied'),
         });
       }
     } catch (error) {
       console.error("Error sharing group:", error);
       toast({
         variant: "destructive",
-        title: "Hitilafu!",
-        description: "Imeshindwa kuunda link kwa ajili ya kushirikisha.",
+        title: t('error'),
+        description: t('share_error'),
       });
     } finally {
       setIsSharing(false);
@@ -112,7 +140,7 @@ const GroupDashboard = () => {
   const Header = (
     <div className="p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{group?.name || "Loading..."}</h1>
+        <h1 className="text-2xl font-bold">{group?.name || t('loading')}</h1>
         <Button 
           size="sm" 
           variant="outline"
@@ -144,13 +172,13 @@ const GroupDashboard = () => {
     return (
       <AppLayout header={Header}>
         <div className="flex justify-center items-center h-full flex-col p-4">
-          <h2 className="text-xl font-semibold text-red-500 mb-2">Hitilafu imetokea</h2>
+          <h2 className="text-xl font-semibold text-red-500 mb-2">{t('error_occurred')}</h2>
           <p className="text-gray-600 text-center">{error}</p>
           <button 
             onClick={fetchGroupDetails}
             className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
           >
-            Jaribu tena
+            {t('try_again')}
           </button>
         </div>
       </AppLayout>
@@ -161,7 +189,7 @@ const GroupDashboard = () => {
     return (
       <AppLayout header={Header}>
         <div className="flex justify-center items-center h-full">
-          <p className="text-gray-500">Kikundi hakipatikani.</p>
+          <p className="text-gray-500">{t('group_not_found')}</p>
         </div>
       </AppLayout>
     );
@@ -178,18 +206,27 @@ const GroupDashboard = () => {
     <AppLayout header={Header}>
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Muhtasari</TabsTrigger>
-          <TabsTrigger value="members">Wanachama</TabsTrigger>
-          <TabsTrigger value="transactions">Malipo</TabsTrigger>
+          <TabsTrigger value="overview">{t('overview')}</TabsTrigger>
+          <TabsTrigger value="members">{t('members')}</TabsTrigger>
+          <TabsTrigger value="transactions">{t('payments')}</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <GroupOverview group={groupWithRelations} />
+          <GroupOverview group={groupWithRelations} isAdmin={isGroupAdmin} />
         </TabsContent>
         <TabsContent value="members">
-          <GroupMembers group={groupWithRelations} onMemberAdded={fetchGroupDetails} />
+          <GroupMembers 
+            group={groupWithRelations} 
+            onMemberAdded={fetchGroupDetails} 
+            isAdmin={isGroupAdmin}
+          />
         </TabsContent>
         <TabsContent value="transactions">
-          <GroupTransactions transactions={transactions} />
+          <GroupTransactions 
+            transactions={transactions} 
+            isAdmin={isGroupAdmin} 
+            groupId={group.id}
+            onTransactionAdded={fetchGroupDetails}
+          />
         </TabsContent>
       </Tabs>
     </AppLayout>

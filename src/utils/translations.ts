@@ -1,245 +1,268 @@
+// Add new translation keys for the group dashboard features
 export const translations = {
-  // Auth
-  welcome: "Karibu kwa Kijumbe",
-  welcome_en: "Welcome to Kijumbe",
-  welcome_fr: "Bienvenue sur Kijumbe",
-
-  login: "Login",
-  login_en: "Login",
-  login_fr: "Connexion",
-
-  loginSubtitle: "Login to access your account",
-  loginSubtitle_en: "Login to access your account",
-  loginSubtitle_fr: "Connexion pour accéder à votre compte",
-
-  emailAddress: "Email Address",
-  emailPlaceholder: "weka email yako",
-  emailPlaceholder_en: "Enter your email address",
-  emailPlaceholder_fr: "Entrez votre adresse e-mail",
-
-  password: "Password",
-  passwordPlaceholder: "••••••",
-  passwordPlaceholder_en: "Enter your password",
-  passwordPlaceholder_fr: "Entrez votre mot de passe",
-
-  forgotPassword: "Forgot Password?",
-  forgotPassword_en: "Forgot Password?",
-  forgotPassword_fr: "Mot de passe oublié ?",
-
-  dontHaveAccount: "Don't have an account?",
-  dontHaveAccount_en: "Don't have an account?",
-  dontHaveAccount_fr: "Vous n'avez pas de compte ?",
-
-  register: "Register",
-  register_en: "Register",
-  register_fr: "S'inscrire",
-
-  verifyEmail: "Verify Your Email",
-  verifyEmail_en: "Verify Your Email",
-  verifyEmail_fr: "Vérifiez votre adresse e-mail",
-
-  verificationSent: "We have sent a verification code to",
-  verificationSent_en: "We have sent a verification code to",
-  verificationSent_fr: "Nous avons envoyé un code de vérification à",
-
-  verifyButton: "Verify Email",
-  verifyButton_en: "Verify Email",
-  verifyButton_fr: "Vérifier l'adresse e-mail",
-
-  didntReceiveCode: "Didn't receive the code?",
-  didntReceiveCode_en: "Didn't receive the code?",
-  didntReceiveCode_fr: "N'ai pas reçu le code ?",
-
-  resend: "Resend",
-  resend_en: "Resend",
-  resend_fr: "Renvoyer",
-
-  useAnotherEmail: "Use a different email",
-  useAnotherEmail_en: "Use a different email",
-  useAnotherEmail_fr: "Utiliser une autre adresse e-mail",
-
-  // Navigation
-  home: "Home",
-  groups: "Vikundi",
-  payments: "Malipo",
-  profile: "Profile",
+  // Existing translations
+  theme: "Mandhari",
+  theme_en: "Theme",
+  theme_fr: "Thème",
   
-  // Dashboard
-  greeting: "Habari",
-  totalBalance: "Jumla ya Akiba",
-  view: "Tazama",
-  contributions: "Michango",
-  paymentsDue: "Malipo",
-  penalties: "Adhabu",
-  upcoming: "Yajayo",
-  quickActions: "Hatua za Haraka",
-  makePayment: "Lipa Mchango",
-  createGroup: "Unda Kikundi",
-  joinGroup: "Jiunge na Kikundi",
-  receipts: "Risiti Zangu",
+  light: "Mwanga",
+  light_en: "Light",
+  light_fr: "Clair",
   
-  // Payments
-  currentPayments: "Malipo Yajayo",
-  paymentHistory: "Historia ya Malipo",
-  contributionAmount: "Kiasi cha Mchango",
-  dueDate: "Tarehe ya Mwisho",
-  payNow: "Lipa Sasa",
-  day: "Siku",
+  dark: "Giza",
+  dark_en: "Dark",
+  dark_fr: "Sombre",
   
-  // Groups
-  activeGroups: "Michezo Hai",
-  completedGroups: "Michezo Zilizokamilika",
-  upcomingGroups: "Zinazokuja",
-  amount: "Mchango",
+  language: "Lugha",
+  language_en: "Language",
+  language_fr: "Langue",
+  
+  swahili: "Kiswahili",
+  swahili_en: "Swahili",
+  swahili_fr: "Swahili",
+  
+  english: "Kiingereza",
+  english_en: "English",
+  english_fr: "Anglais",
+  
+  french: "Kifaransa",
+  french_en: "French",
+  french_fr: "Français",
+  
+  // Group Overview translations
   members: "Wanachama",
-  progress: "Maendeleo",
-  addNewGroup: "Unda Mchezo Mpya",
+  members_en: "Members",
+  members_fr: "Membres",
   
-  // Profile
-  profileTitle: "Wasifu",
-  verified: "Verified",
-  personalInfo: "Taarifa Zangu",
-  personalInfoDesc: "Tazama na hariri taarifa zako za msingi",
-  personalInfoDesc_en: "View and edit your personal information",
-  personalInfoDesc_fr: "Voir et modifier vos informations personnelles",
+  registered_members: "Wanachama waliosajiliwa",
+  registered_members_en: "Registered Members",
+  registered_members_fr: "Membres Enregistrés",
   
-  notifications: "Notifications",
-  notificationsDesc: "Simamia arifa na vipaumbele",
-  notificationsDesc_en: "Receive notifications about your account",
-  notificationsDesc_fr: "Recevez des notifications sur votre compte",
+  amount_collected: "Kiasi Kilichokusanywa",
+  amount_collected_en: "Amount Collected",
+  amount_collected_fr: "Montant Collecté",
   
-  security: "Usalama",
-  securityDesc: "Badilisha nywila na angalia akaunti",
-  securityDesc_en: "Change your password or PIN",
-  securityDesc_fr: "Modifier votre mot de passe ou PIN",
+  total_contributions: "Jumla ya michango",
+  total_contributions_en: "Total Contributions",
+  total_contributions_fr: "Contributions Totales",
   
-  help: "Msaada",
-  helpDesc: "Maswali yanayoulizwa mara kwa mara na msaada",
-  helpDesc_en: "Get help with your account",
-  helpDesc_fr: "Obtenir de l'aide avec votre compte",
+  debt: "Deni",
+  debt_en: "Debt",
+  debt_fr: "Dette",
   
-  about: "Kuhusu",
-  aboutDesc: "Soma kuhusu programu hii",
-  aboutDesc_en: "Learn more about Kijumbe",
-  aboutDesc_fr: "En savoir plus sur Kijumbe",
+  amount_needed: "Kiasi kinachohitajika",
+  amount_needed_en: "Amount Needed",
+  amount_needed_fr: "Montant Nécessaire",
   
-  // Settings (Mpangilio)
-  mpangilioTitle: "Mpangilio",
-  mpangilioTitle_en: "Settings",
-  mpangilioTitle_fr: "Paramètres",
+  member_contributions: "Michango ya Wanachama",
+  member_contributions_en: "Member Contributions",
+  member_contributions_fr: "Contributions des Membres",
   
-  passwordChangeTitle: "Badilisha Nywila / PIN",
-  passwordChangeTitle_en: "Change Password / PIN",
-  passwordChangeTitle_fr: "Changer Mot de Passe / PIN",
+  no_contributions_yet: "Hakuna michango bado",
+  no_contributions_yet_en: "No contributions yet",
+  no_contributions_yet_fr: "Pas encore de contributions",
   
-  passwordChangeDesc: "Sanidi neno la siri au namba ya siri",
-  passwordChangeDesc_en: "Configure your password or PIN",
-  passwordChangeDesc_fr: "Configurez votre mot de passe ou PIN",
+  admin_actions: "Vitendo vya Msimamizi",
+  admin_actions_en: "Admin Actions",
+  admin_actions_fr: "Actions d'Administrateur",
   
-  twoFactorTitle: "Uthibitishaji wa Hatua Mbili (2FA)",
-  twoFactorTitle_en: "Two-Factor Authentication (2FA)",
-  twoFactorTitle_fr: "Authentification à Deux Facteurs (2FA)",
+  admin_privileges_description: "Una mamlaka ya kuongeza wanachama, kuidhinisha michango, na kusimamia kikundi hiki.",
+  admin_privileges_description_en: "You have the authority to add members, approve contributions, and manage this group.",
+  admin_privileges_description_fr: "Vous avez l'autorité pour ajouter des membres, approuver des contributions et gérer ce groupe.",
   
-  twoFactorDesc: "Ongeza usalama kwa uthibitishaji wa ziada",
-  twoFactorDesc_en: "Add security with additional verification",
-  twoFactorDesc_fr: "Ajoutez de la sécurité avec une vérification supplémentaire",
+  // Group tabs and navigation
+  overview: "Muhtasari",
+  overview_en: "Overview",
+  overview_fr: "Aperçu",
   
-  biometricTitle: "Kipengele cha Biometric",
-  biometricTitle_en: "Biometric Feature",
-  biometricTitle_fr: "Fonctionnalité Biométrique",
+  payments: "Malipo",
+  payments_en: "Payments",
+  payments_fr: "Paiements",
   
-  biometricDesc: "Ingia kwa kutumia alama za vidole au uso",
-  biometricDesc_en: "Login using fingerprints or face",
-  biometricDesc_fr: "Connectez-vous avec empreintes digitales ou visage",
+  loading: "Inapakia...",
+  loading_en: "Loading...",
+  loading_fr: "Chargement...",
   
-  logoutAllTitle: "Toka kwenye Vifaa Vyote",
-  logoutAllTitle_en: "Log Out from All Devices",
-  logoutAllTitle_fr: "Déconnexion de Tous les Appareils",
+  error: "Hitilafu!",
+  error_en: "Error!",
+  error_fr: "Erreur!",
   
-  logoutAllDesc: "Funga akaunti kwenye vifaa vingine vyote",
-  logoutAllDesc_en: "Close account on all other devices",
-  logoutAllDesc_fr: "Fermez le compte sur tous les autres appareils",
+  success: "Imefanikiwa!",
+  success_en: "Success!",
+  success_fr: "Succès!",
   
-  manageDevicesTitle: "Vifaa Vilivyoingia",
-  manageDevicesTitle_en: "Connected Devices",
-  manageDevicesTitle_fr: "Appareils Connectés",
+  link_copied: "Link imeundwa nakala. Unaweza kuishirikisha sasa.",
+  link_copied_en: "Link has been copied. You can share it now.",
+  link_copied_fr: "Le lien a été copié. Vous pouvez le partager maintenant.",
   
-  manageDevicesDesc: "Angalia na simamia vifaa vilivyoingia",
-  manageDevicesDesc_en: "View and manage connected devices",
-  manageDevicesDesc_fr: "Voir et gérer les appareils connectés",
+  share_error: "Imeshindwa kuunda link kwa ajili ya kushirikisha.",
+  share_error_en: "Failed to create sharing link.",
+  share_error_fr: "Échec de la création du lien de partage.",
   
-  editProfileTitle: "Hariri Wasifu",
-  editProfileTitle_en: "Edit Profile",
-  editProfileTitle_fr: "Modifier le Profil",
+  error_occurred: "Hitilafu imetokea",
+  error_occurred_en: "An error occurred",
+  error_occurred_fr: "Une erreur s'est produite",
   
-  editProfileDesc: "Badilisha jina, barua pepe, na namba ya simu",
-  editProfileDesc_en: "Change name, email, and phone number",
-  editProfileDesc_fr: "Modifier nom, email et numéro de téléphone",
+  try_again: "Jaribu tena",
+  try_again_en: "Try again",
+  try_again_fr: "Réessayer",
   
-  bankAccountsTitle: "Akaunti za Benki",
-  bankAccountsTitle_en: "Bank Accounts",
-  bankAccountsTitle_fr: "Comptes Bancaires",
+  group_not_found: "Kikundi hakipatikani.",
+  group_not_found_en: "Group not found.",
+  group_not_found_fr: "Groupe introuvable.",
   
-  bankAccountsDesc: "Simamia akaunti zako za benki",
-  bankAccountsDesc_en: "Manage your bank accounts",
-  bankAccountsDesc_fr: "Gérer vos comptes bancaires",
+  // Member management
+  add_member: "Ongeza Mwanachama",
+  add_member_en: "Add Member",
+  add_member_fr: "Ajouter un Membre",
   
-  languageTitle: "Lugha",
-  languageTitle_en: "Language",
-  languageTitle_fr: "Langue",
+  phone_number: "Namba ya Simu",
+  phone_number_en: "Phone Number",
+  phone_number_fr: "Numéro de Téléphone",
   
-  languageDesc: "Chagua lugha unayopendelea",
-  languageDesc_en: "Choose your preferred language",
-  languageDesc_fr: "Choisissez votre langue préférée",
+  enter_phone_number: "Tafadhali ingiza namba ya simu.",
+  enter_phone_number_en: "Please enter a phone number.",
+  enter_phone_number_fr: "Veuillez entrer un numéro de téléphone.",
   
-  themeTitle: "Mandhari Nyeusi",
-  themeTitle_en: "Dark Theme",
-  themeTitle_fr: "Thème Sombre",
+  enter_phone_number_placeholder: "Ingiza namba ya simu",
+  enter_phone_number_placeholder_en: "Enter phone number",
+  enter_phone_number_placeholder_fr: "Entrez le numéro de téléphone",
   
-  themeDesc: "Badilisha muonekano wa programu",
-  themeDesc_en: "Change the app appearance",
-  themeDesc_fr: "Modifier l'apparence de l'application",
+  member_added: "Mwanachama ameongezwa kwenye kikundi.",
+  member_added_en: "Member has been added to the group.",
+  member_added_fr: "Le membre a été ajouté au groupe.",
   
-  appVersionTitle: "Toleo la Programu",
-  appVersionTitle_en: "App Version",
-  appVersionTitle_fr: "Version de l'Application",
+  auth_required: "Tafadhali ingia kwenye akaunti yako kwanza.",
+  auth_required_en: "Please log in to your account first.",
+  auth_required_fr: "Veuillez d'abord vous connecter à votre compte.",
   
-  clearCacheTitle: "Futa Kache/Data",
-  clearCacheTitle_en: "Clear Cache/Data",
-  clearCacheTitle_fr: "Effacer Cache/Données",
+  member_already_exists: "Mwanachama huyu tayari yupo kwenye kikundi.",
+  member_already_exists_en: "This member already exists in the group.",
+  member_already_exists_fr: "Ce membre existe déjà dans le groupe.",
   
-  clearCacheDesc: "Safisha data iliyohifadhiwa kwenye kifaa",
-  clearCacheDesc_en: "Clean data stored on the device",
-  clearCacheDesc_fr: "Nettoyer les données stockées sur l'appareil",
+  members_list: "Orodha ya Wanachama",
+  members_list_en: "Members List",
+  members_list_fr: "Liste des Membres",
   
-  backToSettings: "Rudi kwenye Mpangilio",
-  backToSettings_en: "Back to Settings",
-  backToSettings_fr: "Retour aux Paramètres",
+  member: "Mwanachama",
+  member_en: "Member",
+  member_fr: "Membre",
   
-  save: "Hifadhi",
-  save_en: "Save",
-  save_fr: "Enregistrer",
+  joined_date: "Tarehe ya Kujiunga",
+  joined_date_en: "Joined Date",
+  joined_date_fr: "Date d'Adhésion",
+  
+  actions: "Vitendo",
+  actions_en: "Actions",
+  actions_fr: "Actions",
+  
+  view: "Angalia",
+  view_en: "View",
+  view_fr: "Voir",
+  
+  no_members: "Hakuna wanachama kwenye kikundi hiki.",
+  no_members_en: "No members in this group.",
+  no_members_fr: "Aucun membre dans ce groupe.",
+  
+  // Transactions
+  payment_history: "Historia ya Malipo",
+  payment_history_en: "Payment History",
+  payment_history_fr: "Historique des Paiements",
   
   cancel: "Ghairi",
   cancel_en: "Cancel",
   cancel_fr: "Annuler",
   
-  confirm: "Thibitisha",
-  confirm_en: "Confirm",
-  confirm_fr: "Confirmer",
+  add_payment: "Ongeza Malipo",
+  add_payment_en: "Add Payment",
+  add_payment_fr: "Ajouter un Paiement",
   
-  // Transactions
-  transactionHistory: "Taarifa",
-  viewAll: "Angalia Vyote",
-  deposit: "Umelipa mchango",
-  deposit_en: "Deposit",
-  deposit_fr: "Déposer",
+  amount: "Kiasi",
+  amount_en: "Amount",
+  amount_fr: "Montant",
   
-  withdrawal: "Umepokea malipo",
-  withdrawal_en: "Withdrawal",
-  withdrawal_fr: "Retrait",
+  description: "Maelezo",
+  description_en: "Description",
+  description_fr: "Description",
   
-  groupJoin: "Kikundi kipya",
-  groupJoin_en: "Join Group",
-  groupJoin_fr: "Inscrivez-vous au groupe",
+  save: "Hifadhi",
+  save_en: "Save",
+  save_fr: "Enregistrer",
+  
+  enter_valid_amount: "Tafadhali weka kiasi halali.",
+  enter_valid_amount_en: "Please enter a valid amount.",
+  enter_valid_amount_fr: "Veuillez entrer un montant valide.",
+  
+  transaction_added: "Malipo yameongezwa kikamilifu.",
+  transaction_added_en: "Payment has been added successfully.",
+  transaction_added_fr: "Le paiement a été ajouté avec succès.",
+  
+  date: "Tarehe",
+  date_en: "Date",
+  date_fr: "Date",
+  
+  status: "Hali",
+  status_en: "Status",
+  status_fr: "Statut",
+  
+  no_transactions: "Hakuna malipo yaliyofanyika bado.",
+  no_transactions_en: "No payments made yet.",
+  no_transactions_fr: "Aucun paiement effectué pour l'instant.",
+  
+  // Group creation
+  login_required: "Tafadhali ingia kwenye akaunti yako kwanza.",
+  login_required_en: "Please login to your account first.",
+  login_required_fr: "Veuillez d'abord vous connecter à votre compte.",
+  
+  group_created: "Kikundi Kimeundwa!",
+  group_created_en: "Group Created!",
+  group_created_fr: "Groupe Créé!",
+  
+  group_created_success: "Kikundi chako kipya kimeundwa kikamilifu.",
+  group_created_success_en: "Your new group has been created successfully.",
+  group_created_success_fr: "Votre nouveau groupe a été créé avec succès.",
+  
+  create_new_group: "Unda Kikundi Kipya",
+  create_new_group_en: "Create New Group",
+  create_new_group_fr: "Créer un Nouveau Groupe",
+  
+  group_name: "Jina la Kikundi",
+  group_name_en: "Group Name",
+  group_name_fr: "Nom du Groupe",
+  
+  enter_group_name: "Weka jina la kikundi",
+  enter_group_name_en: "Enter group name",
+  enter_group_name_fr: "Entrez le nom du groupe",
+  
+  group_description: "Maelezo ya Kikundi",
+  group_description_en: "Group Description",
+  group_description_fr: "Description du Groupe",
+  
+  enter_group_description: "Weka maelezo ya kikundi",
+  enter_group_description_en: "Enter group description",
+  enter_group_description_fr: "Entrez la description du groupe",
+  
+  contribution_amount: "Kiasi cha Kuchangia",
+  contribution_amount_en: "Contribution Amount",
+  contribution_amount_fr: "Montant de la Contribution",
+  
+  amount_placeholder: "Kiasi katika shilingi",
+  amount_placeholder_en: "Amount in shillings",
+  amount_placeholder_fr: "Montant en shillings",
+  
+  member_count: "Idadi ya Wanachama",
+  member_count_en: "Member Count",
+  member_count_fr: "Nombre de Membres",
+  
+  member_count_placeholder: "Idadi ya watu watakaoshiriki",
+  member_count_placeholder_en: "Number of participants",
+  member_count_placeholder_fr: "Nombre de participants",
+  
+  creating: "Inaunda...",
+  creating_en: "Creating...",
+  creating_fr: "Création en cours...",
+  
+  create_group: "Unda Kikundi",
+  create_group_en: "Create Group",
+  create_group_fr: "Créer un Groupe"
 };

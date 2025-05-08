@@ -1,8 +1,10 @@
+
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { DollarSign, Users } from "lucide-react";
+import { DollarSign, Users, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "@/hooks/use-translations";
 
 interface GroupCardProps {
   id: string;
@@ -11,9 +13,20 @@ interface GroupCardProps {
   amount: number;
   members: string;
   progress: number;
+  isAdmin?: boolean;
 }
 
-const GroupCard = ({ id, title, description, amount, members, progress }: GroupCardProps) => {
+const GroupCard = ({ 
+  id, 
+  title, 
+  description, 
+  amount, 
+  members, 
+  progress,
+  isAdmin = false
+}: GroupCardProps) => {
+  const { t } = useTranslations();
+  
   // Format currency function
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('sw-TZ', {
@@ -25,50 +38,53 @@ const GroupCard = ({ id, title, description, amount, members, progress }: GroupC
   };
 
   return (
-    <Link to={`/vikundi/${id}`}>
-      <div className="bg-white rounded-lg p-4 shadow-sm mb-4 border border-gray-100">
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <h3 className="font-bold text-xl">{title}</h3>
-            <p className="text-gray-500 text-sm">{description}</p>
+    <Link to={`/vikundi/${id}`} className="block">
+      <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
+        <div className="p-4 space-y-4">
+          <div className="flex justify-between items-start">
+            <div>
+              <div className="flex items-center">
+                <h3 className="font-bold text-xl">{title}</h3>
+                {isAdmin && (
+                  <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20">
+                    {t('admin')}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-muted-foreground text-sm line-clamp-2">{description}</p>
+            </div>
+            <Badge variant="outline" className="bg-secondary text-primary">
+              {t('active')}
+            </Badge>
           </div>
-          <Badge variant="outline" className="bg-secondary text-primary">
-            Hai
-          </Badge>
-        </div>
-        
-        <div className="flex items-center mt-3 mb-2">
-          <div className="flex items-center mr-6">
-            <DollarSign className="text-gray-500 w-4 h-4 mr-1" />
-            <span className="text-sm">Mchango</span>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <DollarSign className="h-4 w-4" />
+                <span>{t('contribution')}</span>
+              </div>
+              <p className="font-medium">TZS {formatCurrency(amount)}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Users className="h-4 w-4" />
+                <span>{t('members')}</span>
+              </div>
+              <p className="font-medium">{members}</p>
+            </div>
           </div>
-          <div className="flex items-center">
-            <Users className="text-gray-500 w-4 h-4 mr-1" />
-            <span className="text-sm">Wanachama</span>
+          
+          <div className="space-y-1">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t('progress')}</span>
+              <span className="font-medium">{progress}%</span>
+            </div>
+            <Progress value={progress} className="h-2" />
           </div>
         </div>
-        
-        <div className="flex mb-3">
-          <div className="w-1/2 pr-3">
-            <p className="font-bold">TZS {formatCurrency(amount)}</p>
-          </div>
-          <div className="w-1/2">
-            <p className="font-bold">{members}</p>
-          </div>
-        </div>
-        
-        <div className="mb-1 flex justify-between">
-          <span className="text-gray-600 text-sm">Maendeleo</span>
-          <span className="text-gray-900 font-medium">{progress}%</span>
-        </div>
-        
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-primary h-2 rounded-full" 
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      </div>
+      </Card>
     </Link>
   );
 };
