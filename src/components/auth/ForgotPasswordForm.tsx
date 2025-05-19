@@ -6,6 +6,7 @@ import { Mail, Lock, Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "@/hooks/use-translations";
 
 type ResetStep = "email" | "security" | "success";
 
@@ -22,6 +23,7 @@ const ForgotPasswordForm = () => {
   const [step, setStep] = useState<ResetStep>("email");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslations();
   const navigate = useNavigate();
 
   const handleSubmitEmail = async (e: React.FormEvent) => {
@@ -34,19 +36,21 @@ const ForgotPasswordForm = () => {
         .from('profiles')
         .select('user_id, security_question, security_answer')
         .eq('email', email)
-        .maybeSingle();
+        .single();
 
-      if (error) throw error;
-      
-      if (!data) {
-        throw new Error("Barua pepe haipatikani katika mfumo wetu.");
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No data found
+          throw new Error("Barua pepe haipatikani katika mfumo wetu.");
+        }
+        throw error;
       }
       
       // Store the security question
-      setSecurityQuestion(data.security_question || null);
+      setSecurityQuestion(data?.security_question || null);
       
       // If we have a security question, move to the security step
-      if (data.security_question) {
+      if (data?.security_question) {
         setStep("security");
       } else {
         // If no security question, use Supabase's built-in password reset functionality
@@ -73,11 +77,16 @@ const ForgotPasswordForm = () => {
         .from('profiles')
         .select('security_answer')
         .eq('email', email)
-        .maybeSingle();
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          throw new Error("Hitilafu imetokea wakati wa kuthibitisha.");
+        }
+        throw error;
+      }
       
-      if (!data || !data.security_answer) {
+      if (!data?.security_answer) {
         throw new Error("Hitilafu imetokea wakati wa kuthibitisha.");
       }
 
