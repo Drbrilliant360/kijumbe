@@ -24,19 +24,21 @@ const ForgotPasswordForm = () => {
 
     try {
       // Check if email exists in our database
-      const { data: profileData, error: profileError } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('user_id, security_question')
         .eq('email', email)
         .single();
 
-      if (profileError) {
+      if (error || !data) {
         throw new Error("Barua pepe haipatikani katika mfumo wetu.");
       }
 
-      if (profileData) {
-        setSecurityQuestion(profileData.security_question || '');
+      if (data && data.security_question) {
+        setSecurityQuestion(data.security_question);
         setStep(2);
+      } else {
+        throw new Error("Swali la usalama halipatikani. Tafadhali wasiliana na msaada.");
       }
     } catch (error: any) {
       toast({
@@ -55,14 +57,14 @@ const ForgotPasswordForm = () => {
 
     try {
       // Check if the security answer matches
-      const { data: profileData, error: profileError } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('user_id')
         .eq('email', email)
         .eq('security_answer', securityAnswer)
         .single();
 
-      if (profileError || !profileData) {
+      if (error || !data) {
         throw new Error("Jibu la swali la usalama si sahihi.");
       }
 
@@ -94,26 +96,22 @@ const ForgotPasswordForm = () => {
 
     try {
       // First, get the user_id from profiles
-      const { data: profileData, error: profileError } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('user_id')
         .eq('email', email)
-        .eq('security_answer', securityAnswer)
         .single();
 
-      if (profileError || !profileData) {
+      if (error || !data) {
         throw new Error("Tatizo limetokea kupata taarifa za mtumiaji.");
       }
 
       // Reset password using supabase auth API
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const { error: resetError } = await supabase.auth.updateUser({
+        password: newPassword
       });
 
-      // Note: In a real implementation, we would need a custom auth flow or server-side function
-      // to reset the password directly without email verification
-
-      if (error) throw error;
+      if (resetError) throw resetError;
 
       toast({
         title: "Nywila Imebadilishwa!",
