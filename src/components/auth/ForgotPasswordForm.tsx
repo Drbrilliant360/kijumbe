@@ -26,19 +26,29 @@ const ForgotPasswordForm = () => {
       // Check if email exists in our database
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, security_question')
+        .select('user_id')
         .eq('email', email)
         .single();
 
       if (error || !data) {
         throw new Error("Barua pepe haipatikani katika mfumo wetu.");
       }
-
-      if (data && data.security_question) {
-        setSecurityQuestion(data.security_question);
+      
+      // Get security question if it exists
+      const { data: securityData } = await supabase
+        .from('profiles')
+        .select('security_question')
+        .eq('email', email)
+        .maybeSingle();
+      
+      const question = securityData?.security_question;
+      
+      if (question) {
+        setSecurityQuestion(question);
         setStep(2);
       } else {
-        throw new Error("Swali la usalama halipatikani. Tafadhali wasiliana na msaada.");
+        // If no security question, allow direct password reset
+        setStep(3);
       }
     } catch (error: any) {
       toast({
@@ -62,7 +72,7 @@ const ForgotPasswordForm = () => {
         .select('user_id')
         .eq('email', email)
         .eq('security_answer', securityAnswer)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
         throw new Error("Jibu la swali la usalama si sahihi.");
@@ -95,12 +105,12 @@ const ForgotPasswordForm = () => {
     }
 
     try {
-      // First, get the user_id from profiles
+      // Get user's auth info from profiles table
       const { data, error } = await supabase
         .from('profiles')
         .select('user_id')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
         throw new Error("Tatizo limetokea kupata taarifa za mtumiaji.");
@@ -249,7 +259,7 @@ const ForgotPasswordForm = () => {
               type="button" 
               variant="outline"
               className="flex-1 py-6"
-              onClick={() => setStep(2)}
+              onClick={() => setStep(step > 1 ? step - 1 : 1)}
             >
               Rudi
             </Button>
