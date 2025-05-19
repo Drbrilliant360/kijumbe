@@ -3,9 +3,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { useState } from "react";
 
 // Pages
 import Index from "./pages/Index";
@@ -33,17 +34,17 @@ import LanguageSettings from "./pages/mpangilio/LanguageSettings";
 import ClearCache from "./pages/mpangilio/ClearCache";
 
 const App = () => {
-  // Create a new QueryClient instance inside the component
-  const queryClient = new QueryClient();
+  // Create QueryClient with useState to ensure it's only created once
+  const [queryClient] = useState(() => new QueryClient());
   
   return (
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <LanguageProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Index />} />
@@ -74,11 +75,11 @@ const App = () => {
                 {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ThemeProvider>
-      </LanguageProvider>
-    </QueryClientProvider>
+            </TooltipProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 };
 

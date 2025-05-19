@@ -116,8 +116,8 @@ export const useUserGroups = (userId: string | null) => {
       console.error('Error fetching groups:', error);
       toast({
         variant: "destructive",
-        title: t('error'),
-        description: t('failed_to_load_groups')
+        title: t("error"),
+        description: t("failed_to_load_groups")
       });
     } finally {
       setLoading(false);

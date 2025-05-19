@@ -8,7 +8,7 @@ const Profile = () => {
   
   const Header = (
     <div className="p-4">
-      <h1 className="text-xl font-bold">{t('profileTitle')}</h1>
+      <h1 className="text-xl font-bold">{t("profileTitle")}</h1>
     </div>
   );
 

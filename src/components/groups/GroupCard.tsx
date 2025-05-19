@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { DollarSign, Users, User } from "lucide-react";
+import { DollarSign, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "@/hooks/use-translations";
 
@@ -47,14 +47,14 @@ const GroupCard = ({
                 <h3 className="font-bold text-xl">{title}</h3>
                 {isAdmin && (
                   <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20">
-                    {t('admin')}
+                    {t("admin")}
                   </Badge>
                 )}
               </div>
               <p className="text-muted-foreground text-sm line-clamp-2">{description}</p>
             </div>
             <Badge variant="outline" className="bg-secondary text-primary">
-              {t('active')}
+              {t("active")}
             </Badge>
           </div>
           
@@ -62,7 +62,7 @@ const GroupCard = ({
             <div className="space-y-1">
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <DollarSign className="h-4 w-4" />
-                <span>{t('contribution')}</span>
+                <span>{t("contribution")}</span>
               </div>
               <p className="font-medium">TZS {formatCurrency(amount)}</p>
             </div>
@@ -70,7 +70,7 @@ const GroupCard = ({
             <div className="space-y-1">
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Users className="h-4 w-4" />
-                <span>{t('members')}</span>
+                <span>{t("members")}</span>
               </div>
               <p className="font-medium">{members}</p>
             </div>
@@ -78,7 +78,7 @@ const GroupCard = ({
           
           <div className="space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('progress')}</span>
+              <span className="text-muted-foreground">{t("progress")}</span>
               <span className="font-medium">{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />

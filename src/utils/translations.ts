@@ -1,3 +1,4 @@
+
 // Add new translation keys for the group dashboard features
 export const translations = {
   // Existing translations
@@ -264,5 +265,90 @@ export const translations = {
   
   create_group: "Unda Kikundi",
   create_group_en: "Create Group",
-  create_group_fr: "Créer un Groupe"
+  create_group_fr: "Créer un Groupe",
+  
+  // New translation keys
+  admin: "Msimamizi",
+  admin_en: "Admin",
+  admin_fr: "Administrateur",
+  
+  active: "Kinafanya kazi",
+  active_en: "Active",
+  active_fr: "Actif",
+  
+  contribution: "Mchango",
+  contribution_en: "Contribution",
+  contribution_fr: "Contribution",
+  
+  progress: "Maendeleo",
+  progress_en: "Progress",
+  progress_fr: "Progrès",
+  
+  failed_to_load_groups: "Imeshindwa kupakia vikundi",
+  failed_to_load_groups_en: "Failed to load groups",
+  failed_to_load_groups_fr: "Échec du chargement des groupes",
+  
+  viewAll: "Angalia Vyote",
+  viewAll_en: "View All",
+  viewAll_fr: "Voir Tout",
+  
+  activeGroups: "Vikundi Vinavyofanya Kazi",
+  activeGroups_en: "Active Groups",
+  activeGroups_fr: "Groupes Actifs",
+  
+  completedGroups: "Vikundi Vilivyokamilika",
+  completedGroups_en: "Completed Groups",
+  completedGroups_fr: "Groupes Terminés",
+  
+  upcomingGroups: "Vikundi Vinavyokuja",
+  upcomingGroups_en: "Upcoming Groups",
+  upcomingGroups_fr: "Groupes à Venir",
+  
+  groups: "Vikundi",
+  groups_en: "Groups",
+  groups_fr: "Groupes",
+  
+  // Language settings translations
+  languageTitle: "Lugha",
+  languageTitle_en: "Language",
+  languageTitle_fr: "Langue",
+  
+  languageDesc: "Badilisha lugha ya programu",
+  languageDesc_en: "Change application language",
+  languageDesc_fr: "Changer la langue de l'application",
+  
+  themeTitle: "Mandhari",
+  themeTitle_en: "Theme",
+  themeTitle_fr: "Thème",
+  
+  themeDesc: "Badilisha mandhari ya programu",
+  themeDesc_en: "Change application theme",
+  themeDesc_fr: "Changer le thème de l'application",
+  
+  // Profile and settings translations
+  profileTitle: "Wasifu",
+  profileTitle_en: "Profile",
+  profileTitle_fr: "Profil",
+  
+  mpangilioTitle: "Mpangilio",
+  mpangilioTitle_en: "Settings",
+  mpangilioTitle_fr: "Paramètres",
+  
+  // Bank accounts translations
+  bankAccountsTitle: "Akaunti za Benki",
+  bankAccountsTitle_en: "Bank Accounts",
+  bankAccountsTitle_fr: "Comptes Bancaires",
+  
+  // Payments page translations
+  currentPayments: "Malipo ya Sasa",
+  currentPayments_en: "Current Payments",
+  currentPayments_fr: "Paiements Actuels",
+  
+  paymentHistory: "Historia ya Malipo",
+  paymentHistory_en: "Payment History",
+  paymentHistory_fr: "Historique des Paiements",
+  
+  makePayment: "Fanya Malipo",
+  makePayment_en: "Make Payment",
+  makePayment_fr: "Effectuer un Paiement"
 };
