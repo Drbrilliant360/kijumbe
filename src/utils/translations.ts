@@ -1,4 +1,3 @@
-
 // Add new translation keys for the group dashboard features
 export const translations = {
   // Existing translations
@@ -350,5 +349,70 @@ export const translations = {
   
   makePayment: "Fanya Malipo",
   makePayment_en: "Make Payment",
-  makePayment_fr: "Effectuer un Paiement"
+  makePayment_fr: "Effectuer un Paiement",
+  
+  // New missing translations for settings pages
+  bankAccountsDesc: "Simamia akaunti zako za benki",
+  bankAccountsDesc_en: "Manage your bank accounts",
+  bankAccountsDesc_fr: "Gérer vos comptes bancaires",
+  
+  biometricTitle: "Kipengele cha Biometric",
+  biometricTitle_en: "Biometric Feature",
+  biometricTitle_fr: "Fonctionnalité Biométrique",
+  
+  biometricDesc: "Washa kipengele cha kutumia alama za vidole au uso",
+  biometricDesc_en: "Enable fingerprint or face recognition",
+  biometricDesc_fr: "Activer la reconnaissance d'empreinte digitale ou faciale",
+  
+  clearCacheTitle: "Futa Data",
+  clearCacheTitle_en: "Clear Data",
+  clearCacheTitle_fr: "Effacer les Données",
+  
+  clearCacheDesc: "Futa data iliyohifadhiwa kwenye kifaa",
+  clearCacheDesc_en: "Clear stored data on this device",
+  clearCacheDesc_fr: "Effacer les données stockées sur cet appareil",
+  
+  editProfileTitle: "Hariri Wasifu",
+  editProfileTitle_en: "Edit Profile",
+  editProfileTitle_fr: "Modifier le Profil",
+  
+  editProfileDesc: "Badilisha jina, barua pepe, na maelezo ya wasifu",
+  editProfileDesc_en: "Change name, email, and profile details",
+  editProfileDesc_fr: "Modifier le nom, l'email et les détails du profil",
+  
+  logoutAllTitle: "Toka Kwenye Vifaa Vyote",
+  logoutAllTitle_en: "Logout from All Devices",
+  logoutAllTitle_fr: "Déconnexion de Tous les Appareils",
+  
+  logoutAllDesc: "Funga akaunti kwenye vifaa vingine vyote",
+  logoutAllDesc_en: "Sign out from all other devices",
+  logoutAllDesc_fr: "Déconnexion de tous les autres appareils",
+  
+  manageDevicesTitle: "Vifaa Vilivyoingia",
+  manageDevicesTitle_en: "Connected Devices",
+  manageDevicesTitle_fr: "Appareils Connectés",
+  
+  manageDevicesDesc: "Angalia na simamia vifaa vilivyoingia",
+  manageDevicesDesc_en: "View and manage connected devices",
+  manageDevicesDesc_fr: "Afficher et gérer les appareils connectés",
+  
+  passwordChangeTitle: "Badilisha Nywila",
+  passwordChangeTitle_en: "Change Password",
+  passwordChangeTitle_fr: "Changer le Mot de Passe",
+  
+  passwordChangeDesc: "Weka nywila mpya kwa ajili ya akaunti yako",
+  passwordChangeDesc_en: "Set a new password for your account",
+  passwordChangeDesc_fr: "Définir un nouveau mot de passe pour votre compte",
+  
+  twoFactorTitle: "Uthibitishaji wa Hatua Mbili",
+  twoFactorTitle_en: "Two-Factor Authentication",
+  twoFactorTitle_fr: "Authentification à Deux Facteurs",
+  
+  twoFactorDesc: "Ongeza usalama kwa uthibitishaji wa ziada",
+  twoFactorDesc_en: "Add security with additional verification",
+  twoFactorDesc_fr: "Ajouter de la sécurité avec une vérification supplémentaire",
+  
+  confirm: "Thibitisha",
+  confirm_en: "Confirm",
+  confirm_fr: "Confirmer"
 };

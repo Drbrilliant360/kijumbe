@@ -16,11 +16,11 @@ const AppExperienceSection = () => {
 
   return (
     <div className="space-y-2">
-      <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 px-4">{t("languageTitle")}</h2>
+      <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 px-4">{t("language")}</h2>
       
       <SettingsItem
         icon={<Languages className="w-5 h-5 text-primary" />}
-        title={t("languageTitle")}
+        title={t("language")}
         description={t("languageDesc")}
         to="/mpangilio/language"
       />
@@ -35,8 +35,8 @@ const AppExperienceSection = () => {
       
       <SettingsItemInfo
         icon={<Languages className="w-5 h-5 text-primary" />}
-        title={`${t("languageTitle")}: ${language === 'sw' ? 'Kiswahili' : language === 'en' ? 'English' : 'Français'}`}
-        description={`${t("languageTitle")} ${language === 'sw' ? 'ya sasa' : language === 'en' ? 'currently set to' : 'actuellement défini à'}`}
+        title={`${t("language")}: ${language === 'sw' ? 'Kiswahili' : language === 'en' ? 'English' : 'Français'}`}
+        description={`${t("language")} ${language === 'sw' ? 'ya sasa' : language === 'en' ? 'currently set to' : 'actuellement défini à'}`}
       />
     </div>
   );
