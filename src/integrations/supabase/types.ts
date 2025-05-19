@@ -86,6 +86,8 @@ export type Database = {
           google_id: string | null
           phone: string | null
           role: string | null
+          security_answer: string | null
+          security_question: string | null
           updated_at: string
           user_id: string
           username: string | null
@@ -98,6 +100,8 @@ export type Database = {
           google_id?: string | null
           phone?: string | null
           role?: string | null
+          security_answer?: string | null
+          security_question?: string | null
           updated_at?: string
           user_id: string
           username?: string | null
@@ -110,6 +114,8 @@ export type Database = {
           google_id?: string | null
           phone?: string | null
           role?: string | null
+          security_answer?: string | null
+          security_question?: string | null
           updated_at?: string
           user_id?: string
           username?: string | null

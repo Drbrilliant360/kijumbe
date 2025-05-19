@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "@/hooks/use-translations";
+import Logo from "@/components/ui/logo";
 
 type ResetStep = "email" | "security" | "success";
 
@@ -14,6 +15,7 @@ interface ProfileData {
   user_id?: string;
   security_question?: string | null;
   security_answer?: string | null;
+  email?: string | null;
 }
 
 const ForgotPasswordForm = () => {
@@ -34,23 +36,21 @@ const ForgotPasswordForm = () => {
       // Check if email exists in our database
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, security_question, security_answer')
+        .select('user_id, security_question, security_answer, email')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // No data found
-          throw new Error("Barua pepe haipatikani katika mfumo wetu.");
-        }
-        throw error;
+      if (error) throw error;
+      
+      if (!data) {
+        throw new Error("Barua pepe haipatikani katika mfumo wetu.");
       }
       
       // Store the security question
-      setSecurityQuestion(data?.security_question || null);
+      setSecurityQuestion(data.security_question || null);
       
       // If we have a security question, move to the security step
-      if (data?.security_question) {
+      if (data.security_question) {
         setStep("security");
       } else {
         // If no security question, use Supabase's built-in password reset functionality
@@ -77,16 +77,11 @@ const ForgotPasswordForm = () => {
         .from('profiles')
         .select('security_answer')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          throw new Error("Hitilafu imetokea wakati wa kuthibitisha.");
-        }
-        throw error;
-      }
+      if (error) throw error;
       
-      if (!data?.security_answer) {
+      if (!data || !data.security_answer) {
         throw new Error("Hitilafu imetokea wakati wa kuthibitisha.");
       }
 
@@ -134,9 +129,7 @@ const ForgotPasswordForm = () => {
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto space-y-6 p-4">
       <div className="bg-secondary rounded-full p-8 mb-4">
-        <div className="w-16 h-16 bg-primary rounded-md flex items-center justify-center">
-          <div className="w-8 h-8 bg-white rounded-sm m-1"></div>
-        </div>
+        <Logo size="md" />
       </div>
 
       <div className="text-center mb-8">

@@ -1,7 +1,7 @@
 
 import SettingsItem from "../settings-items/SettingsItem";
 import SettingsToggleItem from "../settings-items/SettingsToggleItem";
-import { KeyRound, Shield, Fingerprint, LogOut, Smartphone } from "lucide-react";
+import { KeyRound, Shield, Fingerprint, LogOut, Smartphone, HelpCircle } from "lucide-react";
 import { useState } from "react";
 
 const AccountSecuritySection = () => {
@@ -17,6 +17,13 @@ const AccountSecuritySection = () => {
         title="Badilisha Nywila / PIN"
         description="Sanidi neno la siri au namba ya siri"
         to="/mpangilio/password"
+      />
+
+      <SettingsItem
+        icon={<HelpCircle className="w-5 h-5 text-primary" />}
+        title="Swali la Usalama"
+        description="Weka swali la usalama kwa ajili ya kurejeshea akaunti"
+        to="/mpangilio/security-question"
       />
 
       <SettingsToggleItem
