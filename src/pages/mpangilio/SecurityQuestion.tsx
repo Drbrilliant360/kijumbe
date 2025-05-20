@@ -4,47 +4,76 @@ import { useTranslations } from "@/hooks/use-translations";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Shield, ArrowLeft, Save } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { ArrowLeft, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useForm } from "react-hook-form";
 
 const SecurityQuestion = () => {
   const { t } = useTranslations();
-  const [securityQuestion, setSecurityQuestion] = useState("");
-  const [securityAnswer, setSecurityAnswer] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { userProfile, isLoading: profileLoading } = useUserProfile();
+  const { userProfile, loading, userId, fetchUserData } = useUserProfile();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
   
-  useEffect(() => {
-    if (userProfile?.security_question) {
-      setSecurityQuestion(userProfile.security_question);
+  const form = useForm({
+    defaultValues: {
+      securityQuestion: "",
+      securityAnswer: "",
     }
-  }, [userProfile]);
-  
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  });
+
+  useEffect(() => {
+    // When userProfile is loaded, update form values
+    if (userProfile?.securityQuestion) {
+      form.setValue("securityQuestion", userProfile.securityQuestion);
+    }
+    if (userProfile?.securityAnswer) {
+      form.setValue("securityAnswer", userProfile.securityAnswer);
+    }
+  }, [userProfile, form]);
+
+  const onSubmit = async (values: { securityQuestion: string; securityAnswer: string }) => {
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        title: "Hitilafu",
+        description: "Tafadhali ingia kwanza"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
     
     try {
       const { error } = await supabase
         .from('profiles')
         .update({
-          security_question: securityQuestion,
-          security_answer: securityAnswer,
+          security_question: values.securityQuestion,
+          security_answer: values.securityAnswer
         })
-        .eq('user_id', userProfile?.user_id);
-      
+        .eq('user_id', userId);
+
       if (error) throw error;
+
+      toast({
+        title: "Imefanikiwa",
+        description: "Swali la usalama limehifadhiwa"
+      });
       
-      toast.success("Swali la usalama limehifadhiwa!");
-      navigate('/mpangilio');
+      // Refresh user profile data
+      fetchUserData();
     } catch (error: any) {
-      toast.error(error.message || "Hitilafu imetokea wakati wa kuhifadhi swali la usalama.");
+      console.error("Error updating security question:", error);
+      toast({
+        variant: "destructive",
+        title: "Hitilafu",
+        description: error.message || "Imeshindwa kuhifadhi swali la usalama"
+      });
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -55,15 +84,15 @@ const SecurityQuestion = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
       </Link>
-      <h1 className="text-xl font-bold">{t('securityQuestionTitle')}</h1>
+      <h1 className="text-xl font-bold">Swali la Usalama</h1>
     </div>
   );
   
-  if (profileLoading) {
+  if (loading) {
     return (
       <AppLayout header={Header}>
-        <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        <div className="flex justify-center items-center h-64">
+          <p>Inapakia...</p>
         </div>
       </AppLayout>
     );
@@ -78,73 +107,64 @@ const SecurityQuestion = () => {
           </div>
           <h2 className="text-xl font-bold">Swali la Usalama</h2>
           <p className="text-gray-500 text-center">
-            Weka swali la usalama kwa ajili ya kurejesha akaunti yako.
+            Weka swali la usalama kwa ajili ya kurejeshea akaunti yako
           </p>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="security-question" className="block text-sm font-medium">
-              Swali la Usalama
-            </label>
-            <Input
-              id="security-question"
-              type="text"
-              value={securityQuestion}
-              onChange={(e) => setSecurityQuestion(e.target.value)}
-              required
-              placeholder="Mfano: Jina la shule yangu ya msingi?"
-              className="w-full"
-            />
-            <p className="text-xs text-gray-500">
-              Chagua swali ambalo ni rahisi kwako kukumbuka lakini ni gumu kwa mtu mwingine kubahatisha.
-            </p>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="security-answer" className="block text-sm font-medium">
-              Jibu la Usalama
-            </label>
-            <Input
-              id="security-answer"
-              type="text"
-              value={securityAnswer}
-              onChange={(e) => setSecurityAnswer(e.target.value)}
-              required
-              placeholder="Jibu lako"
-              className="w-full"
-            />
-            <p className="text-xs text-gray-500">
-              Hakikisha unaingiza jibu ambalo utakumbuka wakati wa kuomba kurejeshewa nywila.
-            </p>
-          </div>
-          
-          <div className="pt-4">
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading || !securityQuestion || !securityAnswer}
-            >
-              {isLoading ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
-                  Inahifadhi...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Hifadhi Swali la Usalama
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-        
-        <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
-          <h3 className="font-medium mb-2 text-blue-800">Kumbuka</h3>
-          <p className="text-sm text-blue-700">
-            Swali la usalama litakusaidia kuingia kwenye akaunti yako ikiwa utasahau nywila. Hakikisha unahifadhi jibu mahali salama.
-          </p>
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="securityQuestion"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Swali la Usalama</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Mfano: Jina la shule yangu ya kwanza?" 
+                        {...field} 
+                        required
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Chagua swali ambalo ni rahisi kwako kukumbuka jibu lake
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="securityAnswer"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jibu la Swali la Usalama</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Jibu lako" 
+                        {...field} 
+                        required
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Jibu hili litatumika kuthibitisha utambulisho wako
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Inahifadhi..." : "Hifadhi Swali"}
+              </Button>
+            </form>
+          </Form>
         </div>
       </div>
     </AppLayout>

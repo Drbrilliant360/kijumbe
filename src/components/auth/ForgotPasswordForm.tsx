@@ -15,7 +15,6 @@ interface ProfileData {
   user_id?: string;
   security_question?: string | null;
   security_answer?: string | null;
-  email?: string | null;
 }
 
 const ForgotPasswordForm = () => {
@@ -36,8 +35,8 @@ const ForgotPasswordForm = () => {
       // Check if email exists in our database
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, security_question, security_answer, email')
-        .eq('email', email)
+        .select('user_id, security_question, security_answer')
+        .eq('username', email.split('@')[0])
         .maybeSingle();
 
       if (error) throw error;
@@ -76,7 +75,7 @@ const ForgotPasswordForm = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('security_answer')
-        .eq('email', email)
+        .eq('username', email.split('@')[0])
         .maybeSingle();
 
       if (error) throw error;
