@@ -414,30 +414,5 @@ export const translations = {
   
   confirm: "Thibitisha",
   confirm_en: "Confirm",
-  confirm_fr: "Confirmer",
-  
-  // New missing translations for group list
-  myGroups: "Vikundi Vyangu",
-  myGroups_en: "My Groups",
-  myGroups_fr: "Mes Groupes",
-  
-  noGroups: "Hakuna vikundi",
-  noGroups_en: "No groups",
-  noGroups_fr: "Pas de groupes",
-  
-  createGroup: "Unda Kikundi",
-  createGroup_en: "Create Group",
-  createGroup_fr: "Créer un Groupe",
-  
-  noDescription: "Hakuna maelezo",
-  noDescription_en: "No description",
-  noDescription_fr: "Pas de description",
-  
-  shareGroup: "Shiriki Kikundi",
-  shareGroup_en: "Share Group",
-  shareGroup_fr: "Partager le Groupe",
-  
-  options: "Chaguo",
-  options_en: "Options",
-  options_fr: "Options",
+  confirm_fr: "Confirmer"
 };

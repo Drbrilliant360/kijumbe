@@ -2,10 +2,9 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { DollarSign, Users, ArrowRight } from "lucide-react";
+import { DollarSign, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "@/hooks/use-translations";
-import { useState } from "react";
 
 interface GroupCardProps {
   id: string;
@@ -27,7 +26,6 @@ const GroupCard = ({
   isAdmin = false
 }: GroupCardProps) => {
   const { t } = useTranslations();
-  const [isHovered, setIsHovered] = useState(false);
   
   // Format currency function
   const formatCurrency = (amount: number) => {
@@ -40,12 +38,8 @@ const GroupCard = ({
   };
 
   return (
-    <Link to={`/vikundi/${id}`}>
-      <Card 
-        className="overflow-hidden hover:shadow-md transition-all duration-300 relative"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+    <Link to={`/vikundi/${id}`} className="block">
+      <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
         <div className="p-4 space-y-4">
           <div className="flex justify-between items-start">
             <div>
@@ -89,15 +83,6 @@ const GroupCard = ({
             </div>
             <Progress value={progress} className="h-2" />
           </div>
-        </div>
-        
-        {/* Hover effect arrow */}
-        <div 
-          className={`absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary text-white p-2 rounded-full transition-all duration-300 ${
-            isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-          }`}
-        >
-          <ArrowRight className="h-4 w-4" />
         </div>
       </Card>
     </Link>
