@@ -11,7 +11,7 @@ const Home = () => {
   const { userId } = useUserProfile();
   const [isLoading, setIsLoading] = useState(true);
   
-  // Wherever you're using the useUserGroups hook and rendering the GroupsList:
+  // Fetch user groups with the useUserGroups hook
   const { groups, loading, error, refreshGroups } = useUserGroups(userId);
 
   useEffect(() => {

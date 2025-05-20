@@ -48,7 +48,7 @@ const Vikundi = () => {
           *,
           group_members(user_id)
         `)
-        .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId})`);
+        .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId}`);
       
       if (activeTab !== 'all') {
         query = query.eq('status', activeTab);
