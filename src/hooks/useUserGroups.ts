@@ -13,66 +13,44 @@ export const useUserGroups = (userId: string | null) => {
   useEffect(() => {
     if (userId) {
       fetchGroups();
+    } else {
+      setLoading(false);
+      setGroups([]);
     }
   }, [userId]);
 
   const fetchGroups = async () => {
-    try {
-      // First get groups where the user is a creator (admin)
-      const { data: createdGroups, error: createdError } = await supabase
-        .from('groups')
-        .select('*')
-        .eq('creator_id', userId)
-        .eq('status', 'active');
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
 
-      if (createdError) throw createdError;
+    try {
+      setLoading(true);
       
-      // Then get groups where the user is a member
-      const { data: memberGroups, error: memberError } = await supabase
-        .from('group_members')
-        .select('group_id')
-        .eq('user_id', userId);
+      // Get groups where user is creator or member in a single query
+      const { data: userGroups, error: userGroupsError } = await supabase
+        .from('groups')
+        .select(`
+          *,
+          group_members!inner(user_id)
+        `)
+        .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId}`)
+        .eq('status', 'active');
         
-      if (memberError) throw memberError;
+      if (userGroupsError) throw userGroupsError;
       
-      // If user is a member of any group, fetch those group details
-      let joinedGroups: any[] = [];
-      
-      if (memberGroups && memberGroups.length > 0) {
-        const groupIds = memberGroups.map(member => member.group_id);
-        
-        const { data: groups, error: groupsError } = await supabase
-          .from('groups')
-          .select('*')
-          .in('id', groupIds)
-          .eq('status', 'active');
-          
-        if (groupsError) throw groupsError;
-        
-        joinedGroups = groups || [];
-      }
-      
-      // Combine unique groups (avoiding duplicates if user is both creator and member)
-      const allGroups = [...(createdGroups || [])];
-      
-      // Add joined groups that are not already in the list (to avoid duplicates)
-      joinedGroups.forEach(group => {
-        if (!allGroups.some(g => g.id === group.id)) {
-          allGroups.push(group);
-        }
-      });
-      
-      // Fetch group member counts for each group
-      if (allGroups.length > 0) {
-        const groupsWithMemberCounts = await Promise.all(
-          allGroups.map(async (group) => {
+      if (userGroups && userGroups.length > 0) {
+        // Get member counts for each group
+        const groupsWithDetails = await Promise.all(
+          userGroups.map(async (group) => {
             const { count, error: countError } = await supabase
               .from('group_members')
               .select('id', { count: 'exact', head: true })
               .eq('group_id', group.id);
               
-            // Calculate progress percentage
-            const { data: transactionData, error: transactionError } = await supabase
+            // Calculate progress
+            const { data: transactionData } = await supabase
               .from('transactions')
               .select('amount')
               .eq('group_id', group.id)
@@ -80,7 +58,7 @@ export const useUserGroups = (userId: string | null) => {
               
             let collectedAmount = 0;
             
-            if (!transactionError && transactionData) {
+            if (transactionData) {
               collectedAmount = transactionData.reduce((sum, t) => sum + t.amount, 0);
             }
             
@@ -102,7 +80,7 @@ export const useUserGroups = (userId: string | null) => {
         );
         
         // Sort groups: admin groups first, then by creation date
-        const sortedGroups = groupsWithMemberCounts.sort((a, b) => {
+        const sortedGroups = groupsWithDetails.sort((a, b) => {
           if (a.isAdmin && !b.isAdmin) return -1;
           if (!a.isAdmin && b.isAdmin) return 1;
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();

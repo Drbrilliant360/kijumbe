@@ -9,6 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import CreateGroupModal from "@/components/groups/CreateGroupModal";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import Loading from "@/components/ui/loading";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Vikundi = () => {
   const { t } = useTranslations();
@@ -17,14 +24,21 @@ const Vikundi = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+  const { userId } = useUserProfile();
 
   const fetchGroups = async () => {
+    if (!userId) return;
+    
     setIsLoading(true);
     try {
-      // Step 1: Get the groups with simple query
+      // Query to get groups where user is either creator or member
       let query = supabase
         .from('groups')
-        .select('*');
+        .select(`
+          *,
+          group_members!inner(user_id)
+        `)
+        .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId})`);
       
       if (activeTab !== 'all') {
         query = query.eq('status', activeTab);
@@ -70,8 +84,10 @@ const Vikundi = () => {
   };
 
   useEffect(() => {
-    fetchGroups();
-  }, [activeTab, searchQuery]);
+    if (userId) {
+      fetchGroups();
+    }
+  }, [activeTab, searchQuery, userId]);
 
   const Header = (
     <div className="p-4">
@@ -88,9 +104,16 @@ const Vikundi = () => {
             />
             <Search className="w-4 h-4 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
           </div>
-          <button className="p-2">
-            <MoreVertical className="w-5 h-5 text-gray-600" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="p-2 hover:bg-gray-100 rounded-full transition-all">
+                <MoreVertical className="w-5 h-5 text-gray-600" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t("options")}</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -99,7 +122,7 @@ const Vikundi = () => {
           className={`py-2 px-4 rounded-full text-sm font-medium whitespace-nowrap ${
             activeTab === "active"
               ? "bg-primary text-white"
-              : "bg-white text-gray-700 border border-gray-200"
+              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
           }`}
           onClick={() => setActiveTab("active")}
         >
@@ -109,7 +132,7 @@ const Vikundi = () => {
           className={`py-2 px-4 rounded-full text-sm font-medium whitespace-nowrap ${
             activeTab === "completed"
               ? "bg-primary text-white"
-              : "bg-white text-gray-700 border border-gray-200"
+              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
           }`}
           onClick={() => setActiveTab("completed")}
         >
@@ -119,7 +142,7 @@ const Vikundi = () => {
           className={`py-2 px-4 rounded-full text-sm font-medium whitespace-nowrap ${
             activeTab === "upcoming"
               ? "bg-primary text-white"
-              : "bg-white text-gray-700 border border-gray-200"
+              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
           }`}
           onClick={() => setActiveTab("upcoming")}
         >
@@ -133,7 +156,7 @@ const Vikundi = () => {
     <AppLayout header={Header}>
       {isLoading ? (
         <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <Loading size="md" />
         </div>
       ) : groups.length > 0 ? (
         <div className="space-y-4 pb-24">
@@ -146,6 +169,7 @@ const Vikundi = () => {
               amount={group.amount}
               members={`${group.memberCount || 0}/${group.max_members}`}
               progress={Math.min(100, ((group.memberCount || 0) / group.max_members) * 100)}
+              isAdmin={group.creator_id === userId}
             />
           ))}
         </div>

@@ -9,13 +9,15 @@ import TransactionsList from "@/components/home/TransactionsList";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useUserGroups } from "@/hooks/useUserGroups";
 import { useUserTransactions } from "@/hooks/useUserTransactions";
+import { Suspense, lazy } from "react";
+import Loading from "@/components/ui/loading";
 
 const Home = () => {
   const { userName, loading: userLoading, userId } = useUserProfile();
   const { groups, loading: groupsLoading } = useUserGroups(userId);
   const { transactions, loading: transactionsLoading } = useUserTransactions(userId);
   
-  const isLoading = userLoading || groupsLoading || transactionsLoading;
+  const isLoading = userLoading;
 
   const Header = (
     <HomeHeader userName={userName} isLoading={userLoading} />
@@ -25,7 +27,7 @@ const Home = () => {
     return (
       <AppLayout header={Header}>
         <div className="flex items-center justify-center h-48">
-          <Circle className="animate-spin h-10 w-10 text-green-500" />
+          <Loading size="md" />
         </div>
       </AppLayout>
     );
@@ -40,10 +42,10 @@ const Home = () => {
       <QuickActions />
 
       {/* Recent Groups */}
-      <GroupsList groups={groups} />
+      <GroupsList groups={groups} loading={groupsLoading} />
 
       {/* Transaction History */}
-      <TransactionsList transactions={transactions} />
+      <TransactionsList transactions={transactions} loading={transactionsLoading} />
     </AppLayout>
   );
 };
