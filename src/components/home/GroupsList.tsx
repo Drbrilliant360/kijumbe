@@ -1,7 +1,7 @@
 
 import { useTranslations } from "@/hooks/use-translations";
 import PaymentCard from "@/components/payments/PaymentCard";
-import { Share, Info } from "lucide-react";
+import { Share, Info, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -17,13 +17,16 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface GroupsListProps {
   groups: any[];
   loading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }
 
-const GroupsList = ({ groups, loading = false }: GroupsListProps) => {
+const GroupsList = ({ groups, loading = false, error = null, onRetry }: GroupsListProps) => {
   const { t } = useTranslations();
   const { toast } = useToast();
   const [sharingGroup, setSharingGroup] = useState<string | null>(null);
@@ -38,6 +41,31 @@ const GroupsList = ({ groups, loading = false }: GroupsListProps) => {
         {[1, 2].map((i) => (
           <Skeleton key={i} className="h-28 w-full mb-2 rounded-lg" />
         ))}
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="font-bold text-lg">{t("myGroups")}</h2>
+          <Link to="/vikundi" className="text-primary font-medium text-sm hover:underline transition-all">
+            {t("viewAll")} &gt;
+          </Link>
+        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{t("error")}</AlertTitle>
+          <AlertDescription className="flex items-center">
+            {t("failed_to_load_groups")}
+            {onRetry && (
+              <Button variant="link" onClick={onRetry} className="p-0 h-auto text-sm text-white underline ml-2">
+                {t("try_again")}
+              </Button>
+            )}
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }

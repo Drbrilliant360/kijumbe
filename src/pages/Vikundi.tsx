@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, MoreVertical, Users, Calendar, ArrowRight } from "lucide-react";
+import { Plus, Search, MoreVertical, Users, Calendar, ArrowRight, AlertCircle } from "lucide-react";
 import GroupCard from "@/components/groups/GroupCard";
 import AppLayout from "@/components/layout/AppLayout";
 import { useTranslations } from "@/hooks/use-translations";
@@ -16,27 +16,37 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const Vikundi = () => {
   const { t } = useTranslations();
   const [activeTab, setActiveTab] = useState("active");
   const [groups, setGroups] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
   const { userId } = useUserProfile();
 
   const fetchGroups = async () => {
-    if (!userId) return;
+    if (!userId) {
+      setIsLoading(false);
+      setError("User not authenticated");
+      return;
+    }
     
     setIsLoading(true);
+    setError(null);
+    
     try {
+      console.log("Fetching groups for user:", userId);
+      
       // Query to get groups where user is either creator or member
       let query = supabase
         .from('groups')
         .select(`
           *,
-          group_members!inner(user_id)
+          group_members(user_id)
         `)
         .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId})`);
       
@@ -50,7 +60,12 @@ const Vikundi = () => {
       
       const { data: groupsData, error: groupsError } = await query;
       
-      if (groupsError) throw groupsError;
+      if (groupsError) {
+        console.error("Error fetching groups:", groupsError);
+        throw groupsError;
+      }
+      
+      console.log("Raw groups data:", groupsData);
       
       // Step 2: Get member counts for each group separately
       if (groupsData && groupsData.length > 0) {
@@ -60,6 +75,10 @@ const Vikundi = () => {
               .from('group_members')
               .select('id', { count: 'exact', head: true })
               .eq('group_id', group.id);
+            
+            if (countError) {
+              console.error("Error fetching member count:", countError);
+            }
             
             return {
               ...group,
@@ -73,10 +92,12 @@ const Vikundi = () => {
         setGroups([]);
       }
     } catch (error: any) {
+      console.error("Error fetching groups:", error);
+      setError(error.message || "Unknown error");
       toast({
         variant: "destructive",
-        title: "Hitilafu!",
-        description: "Imeshindwa kupata vikundi: " + error.message,
+        title: t("error"),
+        description: t("failed_to_load_groups") + ": " + (error.message || "")
       });
     } finally {
       setIsLoading(false);
@@ -86,6 +107,8 @@ const Vikundi = () => {
   useEffect(() => {
     if (userId) {
       fetchGroups();
+    } else {
+      setIsLoading(false);
     }
   }, [activeTab, searchQuery, userId]);
 
@@ -154,6 +177,19 @@ const Vikundi = () => {
 
   return (
     <AppLayout header={Header}>
+      {error && (
+        <Alert variant="destructive" className="mb-4 mx-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{t("error")}</AlertTitle>
+          <AlertDescription>
+            {t("failed_to_load_groups")}
+            <Button variant="link" onClick={fetchGroups} className="p-0 h-auto text-sm text-white underline ml-2">
+              {t("try_again")}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+      
       {isLoading ? (
         <div className="flex justify-center items-center py-8">
           <Loading size="md" />
@@ -178,8 +214,8 @@ const Vikundi = () => {
           <div className="bg-gray-100 p-4 rounded-full mb-4">
             <Users className="w-10 h-10 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">Hakuna Vikundi</h3>
-          <p className="text-gray-500 mb-6">Hakuna vikundi vilivyopatikana. Unda kikundi kipya kuanza.</p>
+          <h3 className="text-lg font-semibold mb-2">{t("noGroups")}</h3>
+          <p className="text-gray-500 mb-6">{t("noGroups")}</p>
         </div>
       )}
 

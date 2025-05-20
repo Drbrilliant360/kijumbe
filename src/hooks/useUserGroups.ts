@@ -9,6 +9,7 @@ export const useUserGroups = (userId: string | null) => {
   const { t } = useTranslations();
   const [groups, setGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (userId) {
@@ -27,18 +28,26 @@ export const useUserGroups = (userId: string | null) => {
 
     try {
       setLoading(true);
+      setError(null);
+      
+      console.log("Fetching groups for user:", userId);
       
       // Get groups where user is creator or member in a single query
       const { data: userGroups, error: userGroupsError } = await supabase
         .from('groups')
         .select(`
           *,
-          group_members!inner(user_id)
+          group_members(user_id)
         `)
         .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId}`)
         .eq('status', 'active');
         
-      if (userGroupsError) throw userGroupsError;
+      if (userGroupsError) {
+        console.error("Error fetching groups:", userGroupsError);
+        throw userGroupsError;
+      }
+      
+      console.log("Groups data received:", userGroups);
       
       if (userGroups && userGroups.length > 0) {
         // Get member counts for each group
@@ -49,12 +58,20 @@ export const useUserGroups = (userId: string | null) => {
               .select('id', { count: 'exact', head: true })
               .eq('group_id', group.id);
               
+            if (countError) {
+              console.error("Error fetching member count:", countError);
+            }
+              
             // Calculate progress
-            const { data: transactionData } = await supabase
+            const { data: transactionData, error: transactionError } = await supabase
               .from('transactions')
               .select('amount')
               .eq('group_id', group.id)
               .eq('type', 'deposit');
+              
+            if (transactionError) {
+              console.error("Error fetching transactions:", transactionError);
+            }
               
             let collectedAmount = 0;
             
@@ -86,21 +103,25 @@ export const useUserGroups = (userId: string | null) => {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         });
         
+        console.log("Processed groups:", sortedGroups);
         setGroups(sortedGroups);
       } else {
+        console.log("No groups found for user");
         setGroups([]);
       }
     } catch (error: any) {
       console.error('Error fetching groups:', error);
+      setError(error.message || "Unknown error");
       toast({
         variant: "destructive",
         title: t("error"),
         description: t("failed_to_load_groups")
       });
+      setGroups([]);
     } finally {
       setLoading(false);
     }
   };
 
-  return { groups, loading, refreshGroups: fetchGroups };
+  return { groups, loading, error, refreshGroups: fetchGroups };
 };
