@@ -8,10 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GroupOverview from "@/components/groups/GroupOverview";
 import GroupMembers from "@/components/groups/GroupMembers";
 import GroupTransactions from "@/components/groups/GroupTransactions";
-import { Share } from "lucide-react";
+import { Share, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/hooks/use-translations";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import Loading from "@/components/ui/loading";
 
 const GroupDashboard = () => {
   const { id } = useParams();
@@ -161,8 +163,8 @@ const GroupDashboard = () => {
   if (isLoading) {
     return (
       <AppLayout header={Header}>
-        <div className="flex justify-center items-center h-full">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="flex justify-center items-center h-full py-12">
+          <Loading size="md" />
         </div>
       </AppLayout>
     );
@@ -171,15 +173,21 @@ const GroupDashboard = () => {
   if (error) {
     return (
       <AppLayout header={Header}>
-        <div className="flex justify-center items-center h-full flex-col p-4">
-          <h2 className="text-xl font-semibold text-red-500 mb-2">{t('error_occurred')}</h2>
-          <p className="text-gray-600 text-center">{error}</p>
-          <button 
-            onClick={fetchGroupDetails}
-            className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-          >
-            {t('try_again')}
-          </button>
+        <div className="p-4">
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>{t('error_occurred')}</AlertTitle>
+            <AlertDescription className="flex flex-col">
+              <p>{error}</p>
+              <Button 
+                variant="outline" 
+                onClick={fetchGroupDetails} 
+                className="mt-4 self-start"
+              >
+                {t('try_again')}
+              </Button>
+            </AlertDescription>
+          </Alert>
         </div>
       </AppLayout>
     );

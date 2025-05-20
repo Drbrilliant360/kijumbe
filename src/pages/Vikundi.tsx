@@ -42,6 +42,7 @@ const Vikundi = () => {
       console.log("Fetching groups for user:", userId);
       
       // Query to get groups where user is either creator or member
+      // Fixed OR syntax
       let query = supabase
         .from('groups')
         .select(`

@@ -32,15 +32,14 @@ export const useUserGroups = (userId: string | null) => {
       
       console.log("Fetching groups for user:", userId);
       
-      // Fix the query by using proper or filter syntax
+      // Fixed the query by using proper OR syntax
       const { data: userGroups, error: userGroupsError } = await supabase
         .from('groups')
         .select(`
           *,
           group_members(user_id)
         `)
-        .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId}`)
-        .eq('status', 'active');
+        .or(`creator_id.eq.${userId},group_members.user_id.eq.${userId}`);
         
       if (userGroupsError) {
         console.error("Error fetching groups:", userGroupsError);

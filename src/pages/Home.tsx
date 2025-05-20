@@ -1,18 +1,21 @@
 
+import { useState, useEffect } from "react";
 import TransactionsList from "@/components/home/TransactionsList";
 import GroupsList from "@/components/home/GroupsList";
 import AppLayout from "@/components/layout/AppLayout";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useUserGroups } from "@/hooks/useUserGroups";
 import Loading from "@/components/ui/loading";
-import { useState, useEffect } from "react";
+import BalanceSummary from "@/components/home/BalanceSummary";
+import QuickActions from "@/components/home/QuickActions";
+import HomeHeader from "@/components/home/HomeHeader";
 
 const Home = () => {
   const { userId } = useUserProfile();
   const [isLoading, setIsLoading] = useState(true);
   
   // Fetch user groups with the useUserGroups hook
-  const { groups, loading, error, refreshGroups } = useUserGroups(userId);
+  const { groups, loading: groupsLoading, error, refreshGroups } = useUserGroups(userId);
 
   useEffect(() => {
     // Set a short timeout to prevent flashing loading states for quick responses
@@ -34,11 +37,13 @@ const Home = () => {
   }
 
   return (
-    <AppLayout>
-      <div className="py-4 px-4">
+    <AppLayout header={<HomeHeader />}>
+      <div className="py-4 px-4 space-y-6">
+        <BalanceSummary isLoading={groupsLoading} />
+        <QuickActions />
         <GroupsList 
           groups={groups} 
-          loading={loading} 
+          loading={groupsLoading} 
           error={error} 
           onRetry={refreshGroups} 
         />
