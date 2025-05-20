@@ -32,7 +32,7 @@ export const useUserGroups = (userId: string | null) => {
       
       console.log("Fetching groups for user:", userId);
       
-      // Get groups where user is creator or member in a single query
+      // Fix the query by using proper or filter syntax
       const { data: userGroups, error: userGroupsError } = await supabase
         .from('groups')
         .select(`
