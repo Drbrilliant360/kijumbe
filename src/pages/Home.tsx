@@ -11,14 +11,14 @@ import { useUserGroups } from "@/hooks/useUserGroups";
 import { useUserTransactions } from "@/hooks/useUserTransactions";
 
 const Home = () => {
-  const { userName, loading: userLoading, userId } = useUserProfile();
+  const { userName = "", loading: userLoading, userId } = useUserProfile();
   const { groups, loading: groupsLoading } = useUserGroups(userId);
   const { transactions, loading: transactionsLoading } = useUserTransactions(userId);
   
   const isLoading = userLoading || groupsLoading || transactionsLoading;
 
   const Header = (
-    <HomeHeader userName={userName} isLoading={userLoading} />
+    <HomeHeader userName={userName || ""} isLoading={userLoading} />
   );
 
   if (isLoading) {
