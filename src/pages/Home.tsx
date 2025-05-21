@@ -31,6 +31,9 @@ const Home = () => {
     );
   }
 
+  // Show only up to 3 most recent groups in the home page
+  const recentGroups = groups.slice(0, 3);
+
   return (
     <AppLayout header={Header}>
       {/* Balance Summary */}
@@ -40,7 +43,7 @@ const Home = () => {
       <QuickActions />
 
       {/* Recent Groups */}
-      <GroupsList groups={groups} />
+      <GroupsList groups={recentGroups} />
 
       {/* Transaction History */}
       <TransactionsList transactions={transactions} />

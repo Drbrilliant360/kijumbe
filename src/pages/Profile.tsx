@@ -4,12 +4,34 @@ import AppLayout from "@/components/layout/AppLayout";
 import { useTranslations } from "@/hooks/use-translations";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const { t } = useTranslations();
-  const { userName, loading, userEmail } = useUserProfile();
+  const { userName, loading, userEmail, userId } = useUserProfile();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // Check if user is logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        toast({
+          title: "Haujaingia",
+          description: "Tafadhali ingia kwenye akaunti yako kuona wasifu.",
+          variant: "destructive"
+        });
+        navigate("/login");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
   
   const Header = (
     <div className="p-4 flex items-center space-x-4">

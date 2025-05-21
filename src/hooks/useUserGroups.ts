@@ -13,10 +13,19 @@ export const useUserGroups = (userId: string | null) => {
   useEffect(() => {
     if (userId) {
       fetchGroups();
+    } else {
+      setGroups([]);
+      setLoading(false);
     }
   }, [userId]);
 
   const fetchGroups = async () => {
+    if (!userId) {
+      setGroups([]);
+      setLoading(false);
+      return;
+    }
+    
     try {
       // First get groups where the user is a creator (admin)
       const { data: createdGroups, error: createdError } = await supabase
@@ -119,6 +128,7 @@ export const useUserGroups = (userId: string | null) => {
         title: t("error"),
         description: t("failed_to_load_groups")
       });
+      setGroups([]);
     } finally {
       setLoading(false);
     }

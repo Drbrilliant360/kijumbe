@@ -9,69 +9,45 @@ import { supabase } from "@/integrations/supabase/client";
 import CreateGroupModal from "@/components/groups/CreateGroupModal";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useNavigate } from "react-router-dom";
+import { useUserGroups } from "@/hooks/useUserGroups";
 
 const Vikundi = () => {
   const { t } = useTranslations();
   const [activeTab, setActiveTab] = useState("active");
-  const [groups, setGroups] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { userId, loading: userLoading } = useUserProfile();
+  const { groups, loading: groupsLoading, refreshGroups } = useUserGroups(userId);
 
-  const fetchGroups = async () => {
-    setIsLoading(true);
-    try {
-      // Step 1: Get the groups with simple query
-      let query = supabase
-        .from('groups')
-        .select('*');
-      
-      if (activeTab !== 'all') {
-        query = query.eq('status', activeTab);
-      }
+  // Filter groups based on status and search query
+  const filteredGroups = groups.filter(group => {
+    const matchesStatus = activeTab === "all" || group.status === activeTab;
+    const matchesSearch = !searchQuery || 
+      group.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (group.description && group.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    return matchesStatus && matchesSearch;
+  });
 
-      if (searchQuery) {
-        query = query.ilike('name', `%${searchQuery}%`);
-      }
-      
-      const { data: groupsData, error: groupsError } = await query;
-      
-      if (groupsError) throw groupsError;
-      
-      // Step 2: Get member counts for each group separately
-      if (groupsData && groupsData.length > 0) {
-        const groupsWithMemberCounts = await Promise.all(
-          groupsData.map(async (group) => {
-            const { count, error: countError } = await supabase
-              .from('group_members')
-              .select('id', { count: 'exact', head: true })
-              .eq('group_id', group.id);
-            
-            return {
-              ...group,
-              memberCount: countError ? 0 : (count || 0)
-            };
-          })
-        );
-        
-        setGroups(groupsWithMemberCounts);
-      } else {
-        setGroups([]);
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Hitilafu!",
-        description: "Imeshindwa kupata vikundi: " + error.message,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Check if user is authenticated
   useEffect(() => {
-    fetchGroups();
-  }, [activeTab, searchQuery]);
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        toast({
+          title: "Haujaingia",
+          description: "Tafadhali ingia kwenye akaunti yako kuona vikundi.",
+          variant: "destructive"
+        });
+        navigate("/login");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
   const Header = (
     <div className="p-4">
@@ -129,15 +105,17 @@ const Vikundi = () => {
     </div>
   );
 
+  const isLoading = userLoading || groupsLoading;
+
   return (
     <AppLayout header={Header}>
       {isLoading ? (
         <div className="flex justify-center items-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      ) : groups.length > 0 ? (
+      ) : filteredGroups.length > 0 ? (
         <div className="space-y-4 pb-24">
-          {groups.map((group) => (
+          {filteredGroups.map((group) => (
             <GroupCard
               key={group.id}
               id={group.id}
@@ -146,6 +124,7 @@ const Vikundi = () => {
               amount={group.amount}
               members={`${group.memberCount || 0}/${group.max_members}`}
               progress={Math.min(100, ((group.memberCount || 0) / group.max_members) * 100)}
+              isAdmin={group.isAdmin}
             />
           ))}
         </div>
@@ -155,13 +134,17 @@ const Vikundi = () => {
             <Users className="w-10 h-10 text-gray-400" />
           </div>
           <h3 className="text-lg font-semibold mb-2">Hakuna Vikundi</h3>
-          <p className="text-gray-500 mb-6">Hakuna vikundi vilivyopatikana. Unda kikundi kipya kuanza.</p>
+          <p className="text-gray-500 mb-6">
+            {searchQuery 
+              ? "Hakuna vikundi vilivyopatikana kwa utafutaji wako." 
+              : "Hakuna vikundi vilivyopatikana. Unda kikundi kipya kuanza."}
+          </p>
         </div>
       )}
 
       {/* Add Group Button */}
       <div className="fixed bottom-20 left-0 right-0 p-4">
-        <CreateGroupModal onSuccess={fetchGroups} />
+        <CreateGroupModal onSuccess={refreshGroups} />
       </div>
     </AppLayout>
   );
