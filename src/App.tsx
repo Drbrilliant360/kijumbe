@@ -22,6 +22,13 @@ import Mpangilio from "./pages/Mpangilio";
 import NotFound from "./pages/NotFound";
 import GroupDashboard from "./pages/GroupDashboard";
 
+// Profile Sub-pages
+import PersonalInfo from "./pages/profile/PersonalInfo";
+import Notifications from "./pages/profile/Notifications";
+import Security from "./pages/profile/Security";
+import Help from "./pages/profile/Help";
+import About from "./pages/profile/About";
+
 // Mpangilio Sub-pages
 import PasswordChange from "./pages/mpangilio/PasswordChange";
 import TwoFactorAuth from "./pages/mpangilio/TwoFactorAuth";
@@ -60,6 +67,13 @@ const App = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/mpangilio" element={<Mpangilio />} />
                 <Route path="/vikundi/:id" element={<GroupDashboard />} />
+                
+                {/* Profile Sub-routes */}
+                <Route path="/profile/personal" element={<PersonalInfo />} />
+                <Route path="/profile/notifications" element={<Notifications />} />
+                <Route path="/profile/security" element={<Security />} />
+                <Route path="/profile/help" element={<Help />} />
+                <Route path="/profile/about" element={<About />} />
                 
                 {/* Mpangilio Sub-routes */}
                 <Route path="/mpangilio/password" element={<PasswordChange />} />
