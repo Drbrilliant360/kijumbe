@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,14 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { ChevronDown, ChevronUp, UserPlus } from "lucide-react";
+import { 
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle
+} from "@/components/ui/sheet";
+import { ChevronDown, ChevronUp, UserPlus, User, Phone, Eye, UserX } from "lucide-react";
 
 interface GroupMembersProps {
   group: any;
@@ -28,8 +34,51 @@ const GroupMembers = ({ group, onMemberAdded, isAdmin }: GroupMembersProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [sortBy, setSortBy] = useState<string>('joined_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [memberDetails, setMemberDetails] = useState<any>(null);
+  const [isViewingMember, setIsViewingMember] = useState(false);
+  const [memberProfiles, setMemberProfiles] = useState<{[key: string]: any}>({});
+  const [isRemoving, setIsRemoving] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslations();
+
+  useEffect(() => {
+    if (isAdmin && group?.group_members?.length > 0) {
+      fetchMemberProfiles();
+    }
+  }, [group.group_members, isAdmin]);
+
+  const fetchMemberProfiles = async () => {
+    if (!isAdmin) return;
+    
+    try {
+      // Get unique user IDs from group members
+      const userIds = group.group_members
+        .filter((member: any) => member.user_id)
+        .map((member: any) => member.user_id);
+      
+      if (userIds.length === 0) return;
+      
+      // Fetch profiles for these users
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('user_id', userIds);
+        
+      if (error) throw error;
+      
+      // Create a map of user_id to profile
+      const profileMap: {[key: string]: any} = {};
+      if (data) {
+        data.forEach(profile => {
+          profileMap[profile.user_id] = profile;
+        });
+      }
+      
+      setMemberProfiles(profileMap);
+    } catch (error) {
+      console.error("Error fetching member profiles:", error);
+    }
+  };
 
   const addMember = async () => {
     if (!phoneNumber) {
@@ -115,6 +164,51 @@ const GroupMembers = ({ group, onMemberAdded, isAdmin }: GroupMembersProps) => {
     return sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />;
   };
 
+  const viewMemberDetails = (member: any) => {
+    if (!isAdmin) return;
+    
+    const profile = member.user_id ? memberProfiles[member.user_id] : null;
+    setMemberDetails({
+      ...member,
+      profile
+    });
+    setIsViewingMember(true);
+  };
+
+  const removeMember = async (memberId: string) => {
+    if (!isAdmin) return;
+    
+    setIsRemoving(true);
+    try {
+      // Delete the member from the group
+      const { error } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('id', memberId);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Mshiriki ameondolewa",
+        description: "Mshiriki ameondolewa kikundi kikamilifu",
+      });
+      
+      // Close the member details sheet
+      setIsViewingMember(false);
+      
+      // Refresh the group data
+      onMemberAdded && onMemberAdded();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Hitilafu",
+        description: "Imeshindwa kuondoa mshiriki. Tafadhali jaribu tena.",
+      });
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
   return (
     <div className="p-4 space-y-6">
       {/* Add Member Form - Only visible to admins */}
@@ -187,7 +281,12 @@ const GroupMembers = ({ group, onMemberAdded, isAdmin }: GroupMembersProps) => {
                     <TableCell>{new Date(member.joined_at).toLocaleDateString()}</TableCell>
                     {isAdmin && (
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => viewMemberDetails(member)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
                           {t('view')}
                         </Button>
                       </TableCell>
@@ -201,6 +300,80 @@ const GroupMembers = ({ group, onMemberAdded, isAdmin }: GroupMembersProps) => {
           )}
         </CardContent>
       </Card>
+      
+      {/* Member Details Sheet */}
+      <Sheet open={isViewingMember} onOpenChange={setIsViewingMember}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Taarifa za Mshiriki</SheetTitle>
+            <SheetDescription>Taarifa za mshiriki wa kikundi</SheetDescription>
+          </SheetHeader>
+          
+          {memberDetails && (
+            <div className="mt-6 space-y-6">
+              <div className="flex items-center justify-center">
+                <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-12 w-12 text-primary" />
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label>Namba ya Simu</Label>
+                  <div className="flex items-center mt-1 p-2 bg-muted rounded-md">
+                    <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <span>{memberDetails.phone_number}</span>
+                  </div>
+                </div>
+                
+                {memberDetails.profile && (
+                  <>
+                    <div>
+                      <Label>Jina Kamili</Label>
+                      <div className="p-2 bg-muted rounded-md mt-1">
+                        {memberDetails.profile.full_name || 'Haijasajiliwa'}
+                      </div>
+                    </div>
+                    
+                    {memberDetails.profile.email && (
+                      <div>
+                        <Label>Barua pepe</Label>
+                        <div className="p-2 bg-muted rounded-md mt-1">
+                          {memberDetails.profile.email}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+                
+                <div>
+                  <Label>Tarehe ya Kujiunga</Label>
+                  <div className="p-2 bg-muted rounded-md mt-1">
+                    {new Date(memberDetails.joined_at).toLocaleString()}
+                  </div>
+                </div>
+                
+                {/* Admin Actions */}
+                <div className="pt-4">
+                  <Button 
+                    variant="destructive" 
+                    className="w-full"
+                    onClick={() => removeMember(memberDetails.id)}
+                    disabled={isRemoving}
+                  >
+                    {isRemoving ? (
+                      <div className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin mr-2"></div>
+                    ) : (
+                      <UserX className="h-4 w-4 mr-2" />
+                    )}
+                    Ondoa Kwenye Kikundi
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

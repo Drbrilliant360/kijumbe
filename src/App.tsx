@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import Mpangilio from "./pages/Mpangilio";
 import NotFound from "./pages/NotFound";
 import GroupDashboard from "./pages/GroupDashboard";
+import Uliza from "./pages/Uliza";
 
 // Profile Sub-pages
 import PersonalInfo from "./pages/profile/PersonalInfo";
@@ -42,7 +43,15 @@ import ClearCache from "./pages/mpangilio/ClearCache";
 
 const App = () => {
   // Create QueryClient with useState to ensure it's only created once
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60000, // 1 minute
+        cacheTime: 300000, // 5 minutes
+        retry: 1, // Only retry once
+      },
+    },
+  }));
   
   return (
     <BrowserRouter>
@@ -67,6 +76,7 @@ const App = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/mpangilio" element={<Mpangilio />} />
                 <Route path="/vikundi/:id" element={<GroupDashboard />} />
+                <Route path="/uliza" element={<Uliza />} />
                 
                 {/* Profile Sub-routes */}
                 <Route path="/profile/personal" element={<PersonalInfo />} />

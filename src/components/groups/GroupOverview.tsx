@@ -1,9 +1,22 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, DollarSign, CreditCard, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Users, DollarSign, CreditCard, TrendingUp, UserCog, Trash } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslations } from "@/hooks/use-translations";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { 
   ChartContainer, 
   ChartTooltip, 
@@ -32,8 +45,12 @@ interface GroupOverviewProps {
 
 const GroupOverview = ({ group, isAdmin }: GroupOverviewProps) => {
   const { t } = useTranslations();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [memberContributions, setMemberContributions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   
   // Ensure we have array data even if null
   const members = group.group_members || [];
@@ -127,6 +144,38 @@ const GroupOverview = ({ group, isAdmin }: GroupOverviewProps) => {
       console.error("Error fetching member contributions:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteGroup = async () => {
+    if (!isAdmin) return;
+    
+    setIsDeleting(true);
+    try {
+      // Update group status to deleted
+      const { error } = await supabase
+        .from('groups')
+        .update({ status: 'deleted' })
+        .eq('id', group.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Kikundi kimefutwa",
+        description: "Kikundi kimeondolewa kutoka kwenye mfumo",
+      });
+      
+      navigate('/vikundi');
+    } catch (error: any) {
+      console.error("Error deleting group:", error);
+      toast({
+        variant: "destructive",
+        title: "Hitilafu",
+        description: "Imeshindwa kufuta kikundi. Tafadhali jaribu tena.",
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
     }
   };
 
@@ -251,15 +300,50 @@ const GroupOverview = ({ group, isAdmin }: GroupOverviewProps) => {
       {isAdmin && (
         <Card>
           <CardHeader>
-            <CardTitle>{t('admin_actions')}</CardTitle>
+            <CardTitle className="flex items-center">
+              <UserCog className="mr-2 h-5 w-5" />
+              {t('admin_actions')}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
               {t('admin_privileges_description')}
             </p>
+            <div className="flex flex-col gap-2">
+              <Button 
+                variant="destructive"
+                onClick={() => setDeleteDialogOpen(true)}
+                className="flex items-center"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Futa Kikundi
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Group Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Una uhakika unataka kufuta kikundi?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Hatua hii haiwezi kurudishwa. Kikundi kitasafishwa kutoka kwenye mfumo.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Ghairi</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteGroup}
+              disabled={isDeleting}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              {isDeleting ? "Inafuta..." : "Futa Kikundi"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

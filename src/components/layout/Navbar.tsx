@@ -1,94 +1,75 @@
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Users, Wallet, User, Settings } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { 
+  Home as HomeIcon, 
+  CreditCard, 
+  Users, 
+  User, 
+  Settings,
+  MessageSquare
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const path = location.pathname;
-
-  const isActive = (route: string) => {
-    if (route === '/home') {
-      return path === '/home';
-    }
-    if (route === '/vikundi') {
-      return path.startsWith('/vikundi');
-    }
-    if (route === '/malipo') {
-      return path.startsWith('/malipo');
-    }
-    if (route === '/profile') {
-      return path.startsWith('/profile');
-    }
-    if (route === '/mpangilio') {
-      return path.startsWith('/mpangilio');
-    }
+  const location = useLocation();
+  const currentPath = location.pathname;
+  
+  const isActive = (path: string) => {
+    if (path === '/home' && currentPath === '/home') return true;
+    if (path !== '/home' && currentPath.startsWith(path)) return true;
     return false;
   };
-
-  const handleNavigation = (route: string) => {
-    if (route === '/home' && (path === '/login' || path === '/')) {
-      navigate('/home');
-    } else {
-      navigate(route);
-    }
-  };
-
+  
+  const navItems = [
+    {
+      label: 'Nyumbani',
+      icon: HomeIcon,
+      path: '/home'
+    },
+    {
+      label: 'Malipo',
+      icon: CreditCard,
+      path: '/malipo'
+    },
+    {
+      label: 'Vikundi',
+      icon: Users,
+      path: '/vikundi'
+    },
+    {
+      label: 'Uliza',
+      icon: MessageSquare,
+      path: '/uliza'
+    },
+    {
+      label: 'Mpangilio',
+      icon: Settings,
+      path: '/mpangilio'
+    },
+  ];
+  
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-      <div className="flex justify-around items-center p-2">
-        <NavItem 
-          onClick={() => handleNavigation('/home')}
-          icon={<Home className={`w-6 h-6 ${isActive('/home') ? 'text-primary' : 'text-gray-500'}`} />} 
-          label="Mwanzo" 
-          isActive={isActive('/home')} 
-        />
-        <NavItem 
-          onClick={() => handleNavigation('/vikundi')}
-          icon={<Users className={`w-6 h-6 ${isActive('/vikundi') ? 'text-primary' : 'text-gray-500'}`} />} 
-          label="Vikundi" 
-          isActive={isActive('/vikundi')} 
-        />
-        <NavItem 
-          onClick={() => handleNavigation('/malipo')}
-          icon={<Wallet className={`w-6 h-6 ${isActive('/malipo') ? 'text-primary' : 'text-gray-500'}`} />} 
-          label="Malipo" 
-          isActive={isActive('/malipo')} 
-        />
-        <NavItem 
-          onClick={() => handleNavigation('/profile')}
-          icon={<User className={`w-6 h-6 ${isActive('/profile') ? 'text-primary' : 'text-gray-500'}`} />} 
-          label="Wasifu" 
-          isActive={isActive('/profile')} 
-        />
-        <NavItem 
-          onClick={() => handleNavigation('/mpangilio')}
-          icon={<Settings className={`w-6 h-6 ${isActive('/mpangilio') ? 'text-primary' : 'text-gray-500'}`} />} 
-          label="Mpangilio" 
-          isActive={isActive('/mpangilio')} 
-        />
+    <nav className="bg-background border-t fixed bottom-0 left-0 right-0 h-16 z-50">
+      <div className="flex items-center justify-around h-full max-w-md mx-auto">
+        {navItems.map((item, index) => (
+          <button
+            key={index}
+            className={cn(
+              "flex flex-col items-center justify-center w-full h-full",
+              isActive(item.path) ? "text-primary" : "text-muted-foreground"
+            )}
+            onClick={() => navigate(item.path)}
+          >
+            <item.icon className={cn(
+              "h-5 w-5 mb-1",
+              isActive(item.path) ? "text-primary" : "text-muted-foreground"
+            )} />
+            <span className="text-xs font-medium">{item.label}</span>
+          </button>
+        ))}
       </div>
-    </div>
-  );
-};
-
-interface NavItemProps {
-  icon: React.ReactNode;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}
-
-const NavItem = ({ icon, label, isActive, onClick }: NavItemProps) => {
-  return (
-    <button onClick={onClick} className="flex flex-col items-center w-full">
-      <div className="flex flex-col items-center">
-        {icon}
-        <span className={`text-xs mt-1 ${isActive ? 'text-primary font-medium' : 'text-gray-500'}`}>
-          {label}
-        </span>
-      </div>
-    </button>
+    </nav>
   );
 };
 

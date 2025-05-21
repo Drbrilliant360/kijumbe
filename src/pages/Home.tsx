@@ -9,6 +9,7 @@ import TransactionsList from "@/components/home/TransactionsList";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useUserGroups } from "@/hooks/useUserGroups";
 import { useUserTransactions } from "@/hooks/useUserTransactions";
+import Loading from "@/components/ui/loading";
 
 const Home = () => {
   const { userName = "", loading: userLoading, userId } = useUserProfile();
@@ -25,7 +26,7 @@ const Home = () => {
     return (
       <AppLayout header={Header}>
         <div className="flex items-center justify-center h-48">
-          <Circle className="animate-spin h-10 w-10 text-green-500" />
+          <Loading size="sm" />
         </div>
       </AppLayout>
     );
